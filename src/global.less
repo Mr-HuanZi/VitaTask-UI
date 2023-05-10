@@ -1,0 +1,164 @@
+@import '~antd/es/style/variable.less';
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+.colorWeak {
+  filter: invert(80%);
+}
+
+.ant-layout {
+  min-height: 100vh;
+}
+.ant-pro-sider.ant-layout-sider.ant-pro-sider-fixed {
+  left: unset;
+}
+
+canvas {
+  display: block;
+}
+
+body {
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+ul,
+ol {
+  list-style: none;
+}
+
+@media (max-width: @screen-xs) {
+  .ant-table {
+    width: 100%;
+    overflow-x: auto;
+    &-thead > tr,
+    &-tbody > tr {
+      > th,
+      > td {
+        white-space: pre;
+        > span {
+          display: block;
+        }
+      }
+    }
+  }
+}
+
+// Compatible with IE11
+@media screen and(-ms-high-contrast: active), (-ms-high-contrast: none) {
+  body .ant-design-pro > .ant-layout {
+    min-height: 100vh;
+  }
+}
+
+/* flex */
+.flex {
+  display: flex;
+}
+
+.flex-column {
+  flex-direction: column;
+}
+
+.flex-wrap {
+  flex-wrap: wrap;
+}
+
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flex-start {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.flex-column-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.flex-end{
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.flex-space-around {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.flex-1 {
+  flex: auto;
+}
+
+.flex-0 {
+  flex: none;
+}
+
+.flex-1-0 {
+  flex: 1 0 auto;
+}
+
+.flex-as-center {
+  align-self: center;
+}
+
+.flex-as-end {
+  align-self: flex-end;
+}
+
+@base-size: 5; // 生成样式的基数
+@max-size: 40; // 生成的最大值
+
+// @class:  生成的class类名前缀
+// @attribute:  使用的属性
+.generate(@class, @attribute) {
+  .loop(@n) when (@n <= @max-size) {
+    .@{class}-@{n} {
+        @{attribute}: 1px * @n !important;
+    }
+    .loop(@n + @base-size);
+  }
+  .loop(0)
+}
+
+.generate(m-t, margin-top);
+.generate(m-b, margin-bottom);
+.generate(m-l, margin-left);
+.generate(m-r, margin-right);
+.generate(p-t, padding-top);
+.generate(p-b, padding-bottom);
+.generate(p-l, padding-left);
+.generate(p-r, padding-right);
+
+
+.ta-l {
+  text-align: left;
+}
+
+.ta-c {
+  text-align: center;
+}
+
+.ta-r {
+  text-align: right;
+}

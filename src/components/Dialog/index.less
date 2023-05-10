@@ -1,0 +1,104 @@
+.wrapper {
+  height: 740px;
+  /* 声明一个容器 */
+  display: grid;
+  /*  声明列的宽度  */
+  grid-template-columns: repeat(1, 100%);
+  /*  声明行间距和列间距  */
+  grid-gap: 5px;
+  /*  声明行的高度  */
+  grid-template-rows: 85% 15%;
+}
+
+.DialogList {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  color: rgba(0, 0, 0, 0.85);
+  font-size: 14px;
+  font-variant: tabular-nums;
+  line-height: 1.5715;
+  list-style: none;
+  font-feature-settings: 'tnum', "tnum";
+  position: relative;
+  overflow-y: auto;
+}
+
+.DialogItem {
+  /* 继承背景色 */
+  background-color: inherit;
+  display: flex;
+  flex-direction: row;
+}
+
+.DialogItemUser {
+  /* 继承背景色 */
+  background-color: inherit;
+  display: flex;
+  flex-direction: row-reverse;
+}
+
+
+.DialogItemInner {
+  display: flex;
+  padding-top: 16px;
+  width: 75%;
+  align-items: flex-start;
+
+  &.InnerLeft {
+    flex-direction: row;
+  }
+  &.InnerRight {
+    flex-direction: row-reverse;
+  }
+
+  .DialogItemAvatar {
+    position: relative;
+  }
+
+  .DialogItemContent {
+    position: relative;
+    box-sizing: border-box;
+    max-width: 100%;
+    font-size: 14px;
+    word-wrap: break-word;
+    order: 1;
+    margin: 0 12px;
+
+    .DialogItemContentAuthor {
+      display: flex;
+      flex-wrap: wrap;
+      margin-bottom: 4px;
+      font-size: 14px;
+
+      &.ContentAuthorLeft {
+        justify-content: flex-start;
+      }
+
+      &.ContentAuthorRight {
+        justify-content: flex-end;
+      }
+
+      &>a,&>span {
+        padding-right: 8px;
+        font-size: 12px;
+        line-height: 18px;
+      }
+
+      .name {
+        color: rgba(0,0,0,.45);
+        transition: color .3s;
+      }
+
+      .time {
+        color: #ccc;
+        white-space: nowrap;
+        cursor: auto;
+      }
+    }
+
+    .DialogItemContentDetail {
+      position: relative;
+    }
+  }
+}
