@@ -24,6 +24,7 @@ declare namespace WorkflowAPI {
   type WorkflowType = {
     id: number;
     name: string;
+    illustrate: string;
     org_id: number;
     only_name: string;
     system: number;

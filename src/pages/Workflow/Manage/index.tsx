@@ -3,7 +3,7 @@ import { PageContainer } from '@ant-design/pro-layout';
 import type { ActionType, ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
 import type {ProFormInstance} from '@ant-design/pro-form';
-import { ProFormSwitch} from '@ant-design/pro-form';
+import {ProFormSwitch, ProFormTextArea} from '@ant-design/pro-form';
 import {ModalForm, ProFormText} from '@ant-design/pro-form';
 import { message, Button } from 'antd';
 import { Link } from 'umi';
@@ -48,6 +48,7 @@ const Messages: React.FC = () => {
     >
       <ProFormText name="name" label="工作流类型名称" />
       <ProFormText name="only_name" label="工作流唯一标识" />
+      <ProFormTextArea name="illustrate" label="工作流说明" />
       <ProFormSwitch name="system" label="系统级" />
     </ModalForm>
   );
@@ -65,6 +66,11 @@ const Messages: React.FC = () => {
     {
       title: '唯一标识',
       dataIndex: 'only_name',
+      hideInSearch: true,
+    },
+    {
+      title: '说明',
+      dataIndex: 'illustrate',
       hideInSearch: true,
     },
     {
@@ -86,10 +92,10 @@ const Messages: React.FC = () => {
             setWorkflowTypeId(entity.id);
             setWorkflowNameFormVisible(true);
             // 弹层动画有延迟，如果这里不延迟执行数据不显示
-            setTimeout(() => updateFormRef.current?.setFieldsValue({"name": entity.name, "system": entity?.system === 1 ?? false}), 100);
+            setTimeout(() => updateFormRef.current?.setFieldsValue({"name": entity.name, "system": entity?.system === 1 ?? false, "illustrate": entity.illustrate}), 100);
           }}
         >
-          编辑名称
+          编辑
         </a>,
         <Link key="steps" to={`/workflow/manage/nodes/${entity.id}`}>
           节点管理
@@ -150,6 +156,7 @@ const Messages: React.FC = () => {
         }}
       >
         <ProFormText name="name" label="工作流类型名称" />
+        <ProFormTextArea name="illustrate" label="工作流说明" />
         <ProFormSwitch name="system" label="系统级" />
       </ModalForm>
     </PageContainer>
