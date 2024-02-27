@@ -2,7 +2,7 @@ import {useCallback, useEffect, useState} from "react";
 import {notification} from 'antd';
 
 export type Payload = {
-  module: string;
+  event: string;
   data: any;
 }
 
@@ -17,15 +17,20 @@ export default () => {
       return;
     }
     // 初始化
-    const ws = init(token);
+    const ws = init();
     setSocket(ws);
+    // 500ms 后发送认证消息
+    setTimeout(() => {
+      const payload: Payload = {event: 'auth', data: token}
+      ws.send(JSON.stringify(payload));
+    }, 500);
     // 每50秒发送一个心跳包
     const timer = setInterval(() => {
       if (ws.readyState == ws.CLOSED) {
         clearInterval(timer);
         return;
       }
-      const payload: Payload = {module: 'heartbeat', data: undefined}
+      const payload: Payload = {event: 'heartbeat', data: undefined}
       ws.send(JSON.stringify(payload));
     }, 1000*50);
 
@@ -38,20 +43,22 @@ export default () => {
   }, [token]);
 
   // 发送消息
-  const sendMessage = useCallback((module: string, data: any) => {
+  // info: 暂不可用，socket始终为undefined
+  const sendMessage = useCallback((event: string, data: any) => {
     console.log('接收到要发送的消息', data);
     if (!socket) {
-      return
+      console.error('WebSocket error: socket未初始化');
+      return;
     }
 
-    const payload: Payload = {module, data}
+    const payload: Payload = {event, data}
     socket.send(JSON.stringify(payload));
   }, [socket]);
 
-  function init(t: string) {
-      const ws = new WebSocket(`ws://127.0.0.1:8081/chat/`, [t]);
+  function init() {
+      const ws = new WebSocket(`ws://127.0.0.1:8082/chat`);
       function onConnect() {
-        console.log('已连接服务端');
+        console.log('已连接WebSocket服务端');
       }
       function onDisconnect() {
         notification.error({
