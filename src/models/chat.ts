@@ -19,11 +19,6 @@ export default () => {
     // 初始化
     const ws = init();
     setSocket(ws);
-    // 500ms 后发送认证消息
-    setTimeout(() => {
-      const payload: Payload = {event: 'auth', data: token}
-      ws.send(JSON.stringify(payload));
-    }, 500);
     // 每50秒发送一个心跳包
     const timer = setInterval(() => {
       if (ws.readyState == ws.CLOSED) {
@@ -59,6 +54,9 @@ export default () => {
       const ws = new WebSocket(`ws://127.0.0.1:8082/chat`);
       function onConnect() {
         console.log('已连接WebSocket服务端');
+        // 发送认证信息
+        const payload: Payload = {event: 'auth', data: token}
+        ws.send(JSON.stringify(payload));
       }
       function onDisconnect() {
         notification.error({
