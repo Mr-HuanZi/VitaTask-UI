@@ -57,8 +57,7 @@ const Dialog: React.FC<DialogProps> = ({dialogId}) => {
   }, [dialogId]);
 
   useEffect(() => {
-    if (messages && messages?.module === 'chat') {
-      console.log(messages);
+    if (messages && messages?.event === 'chat') {
       handleDialogList([messages.data]);
     }
   }, [messages]);
