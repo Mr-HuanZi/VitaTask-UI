@@ -14,9 +14,10 @@ import type {ProSchemaValueEnumType} from "@ant-design/pro-utils/lib/typing";
 interface TableListPropsI {
   requestFn: (params: any) => Promise<API.CResult<API.PageResult<any>>>;
   ExcludedField?: string[];
+  toolBarRender?: React.ReactNode[] | false;
 }
 
-const TableList: React.FC<TableListPropsI> = ({requestFn, ExcludedField}) => {
+const TableList: React.FC<TableListPropsI> = ({requestFn, ExcludedField, toolBarRender}) => {
   const actionRef = useRef<ActionType>();
 
   const [statusEnum, setStatusEnum] = useState<Map<string, ProSchemaValueEnumType>>();
@@ -144,6 +145,7 @@ const TableList: React.FC<TableListPropsI> = ({requestFn, ExcludedField}) => {
       columns={columns}
       actionRef={actionRef}
       revalidateOnFocus={false}
+      toolBarRender={!toolBarRender ? toolBarRender: () => toolBarRender}
       request={async (params: any) => {
         // 官方教程 https://procomponents.ant.design/components/table#request
         // tips： 如果按照官方的教程来，我也不知道 params 里应该定义什么，索性直接这样就行
