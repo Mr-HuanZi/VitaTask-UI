@@ -57,11 +57,20 @@ export async function WorkflowTypeAdd(
   });
 }
 
-/** 工作流类型名称修改 POST /workflow/type/name */
+/** 工作流类型详情接口 POST /workflow/type/detail */
 export async function WorkflowTypeDetail(id: number, options?: { [key: string]: any }) {
   return request<API.CResult<WorkflowAPI.WorkflowType>>('/workflow/type/detail', {
     method: 'POST',
     data: { id },
+    ...(options || {}),
+  });
+}
+
+/** 工作流类型详情(根据OnlyName)接口 POST /workflow/type/detail/only */
+export async function WorkflowTypeDetailByOnlyName(onlyName: string, options?: { [key: string]: any }) {
+  return request<API.CResult<WorkflowAPI.WorkflowType>>('/workflow/type/detail/only', {
+    method: 'POST',
+    data: { id: onlyName },
     ...(options || {}),
   });
 }
@@ -132,7 +141,7 @@ export async function FetchWorkflowNodeActions(options?: { [key: string]: any })
 
 
 
-/** 工作流类型列表(无分页) GET /workflow/status/list */
+/** 工作流状态类型列表(无分页) GET /workflow/status/list */
 export async function WorkflowStatusList(options?: { [key: string]: any }) {
   return request<API.CResult<Map<string, ProSchemaValueEnumType>>>('/workflow/status/list', {
     method: 'GET',
@@ -152,7 +161,7 @@ export async function WorkflowHandle(body: any, options?: { [keys: string]: any 
 /** 工作流发起 POST /workflow/initiate */
 export async function WorkflowInitiate(
   body: {
-    workflow_type_id: number;
+    type_id: number;
     remarks?: string;
     data?: any;
   },

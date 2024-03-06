@@ -3,11 +3,12 @@ import { Button, message, Modal, Typography } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import { useParams } from 'umi';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
-import { WorkflowInitiate, WorkflowTypeDetail } from '@/services/workflow/api';
+import {WorkflowInitiate, WorkflowTypeDetailByOnlyName} from '@/services/workflow/api';
 import { history } from '@@/core/history';
 import ProCard from '@ant-design/pro-card';
 import { ProFormText } from '@ant-design/pro-form';
 import BasicException from '@/exceptions/BasicException';
+import {codeOk} from "@/units";
 
 const { confirm } = Modal;
 const { Title } = Typography;
@@ -25,8 +26,8 @@ const Initiate: React.FC = () => {
 
   useEffect(() => {
     const { name } = routeParams;
-    WorkflowTypeDetail(name).then((result) => {
-      if (result.code === 1) {
+    WorkflowTypeDetailByOnlyName(name).then((result) => {
+      if (codeOk(result.code)) {
         setWorkflowType(result.data);
       }
     });
@@ -64,12 +65,12 @@ const Initiate: React.FC = () => {
           }
         }
         WorkflowInitiate({
-          workflow_type_id: workflowType?.id ?? 0,
+          type_id: workflowType?.id ?? 0,
           remarks,
           data: workflowData,
         })
           .then((result) => {
-            if (result.code === 1) {
+            if (codeOk(result.code)) {
               message.success('操作成功').then();
               history.push(`/workflow/success/${result.data?.workflow?.id ?? 0}`);
             }
