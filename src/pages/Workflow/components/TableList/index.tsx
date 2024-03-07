@@ -151,6 +151,11 @@ const TableList: React.FC<TableListPropsI> = ({requestFn, ExcludedField, toolBar
         // tips： 如果按照官方的教程来，我也不知道 params 里应该定义什么，索性直接这样就行
         // 这里需要返回一个 Promise,在返回之前你可以进行数据转化
         // 如果需要转化参数可以在这里进行修改
+        if (params?.status) {
+          // 将其转换成数字类型
+          params.status = Number(params.status);
+        }
+
         const result = await requestFn({
           page: params.current,
           pageSize: params.pageSize,
