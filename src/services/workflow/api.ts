@@ -143,7 +143,7 @@ export async function FetchWorkflowNodeActions(options?: { [key: string]: any })
 
 /** 工作流状态类型列表(无分页) GET /workflow/status/list */
 export async function WorkflowStatusList(options?: { [key: string]: any }) {
-  return request<API.CResult<Map<string, ProSchemaValueEnumType>>>('/workflow/status/list', {
+  return request<API.CResult<Map<number, ProSchemaValueEnumType>>>('/workflow/status/list', {
     method: 'GET',
     ...(options || {}),
   });

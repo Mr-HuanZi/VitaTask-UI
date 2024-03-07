@@ -20,7 +20,7 @@ interface TableListPropsI {
 const TableList: React.FC<TableListPropsI> = ({requestFn, ExcludedField, toolBarRender}) => {
   const actionRef = useRef<ActionType>();
 
-  const [statusEnum, setStatusEnum] = useState<Map<string, ProSchemaValueEnumType>>();
+  const [statusEnum, setStatusEnum] = useState<Map<number, ProSchemaValueEnumType>>();
 
   useEffect(function (){
     WorkflowStatusList().then((result) => {
@@ -82,7 +82,7 @@ const TableList: React.FC<TableListPropsI> = ({requestFn, ExcludedField, toolBar
     },
     {
       title: '状态',
-      dataIndex: 'status_text',
+      dataIndex: 'status',
       valueType: 'select',
       valueEnum: statusEnum,
       hideInTable: ExcludedField ? ExcludedField?.indexOf('status') !== -1 : false,
