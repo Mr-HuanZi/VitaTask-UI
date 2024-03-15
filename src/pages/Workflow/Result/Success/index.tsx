@@ -5,7 +5,7 @@ import { GridContent } from '@ant-design/pro-layout';
 
 import styles from './index.less';
 import { history, useParams } from 'umi';
-import { QueryFootprint, QueryWorkflowDetail } from '@/services/workflow/api';
+import {fetchWorkflowDetail, QueryFootprint} from '@/services/workflow/api';
 
 const { Step } = Steps;
 
@@ -22,7 +22,7 @@ const Desc: FC<{ auditors: any }> = ({ auditors }) => {
 const Success: FC = () => {
   const routeParams: any = useParams();
 
-  const [steps, setSteps] = useState<WorkflowAPI.WorkflowTypeStep[]>();
+  const [steps, setSteps] = useState<WorkflowAPI.WorkflowNode[]>();
   const [curr, setCurr] = useState<number>(0);
   const [workflowId, setWorkflowId] = useState<number>(0);
   const [workflowDetail, setWorkflowDetail] = useState<any>();
@@ -36,7 +36,7 @@ const Success: FC = () => {
         setCurr(parseInt(result.data?.curr) - 1);
       }
     });
-    QueryWorkflowDetail(id).then((result) => {
+    fetchWorkflowDetail(id).then((result) => {
       if (result.code === 1) {
         const { data } = result;
         setWorkflowDetail(data ?? {});

@@ -14,8 +14,8 @@ declare namespace WorkflowAPI {
     status: number;
     node: number;
     end: boolean;
-    node_info?: WorkflowNode;
-    operator?: WorkflowAuditor[];
+    status_text?: string;
+    remarks?: string;
     submit_num: number;
     create_time?: string;
     update_time?: string;
@@ -61,24 +61,21 @@ declare namespace WorkflowAPI {
     step_info?: WorkflowTypeStep;
   };
 
-  type WorkflowAuditor = {
+  type WorkflowOperators = {
     id: number;
-    step: number;
     workflow_id: number;
     userid: number;
     nickname: string;
     handled: number;
-    created_at?: string;
-    updated_at?: string;
-  };
+    node: number;
+  }
 
   type WorkflowDetail = {
     [x: string]: any[];
     workflow: Workflow;
-    workflowData: any;
-    workflowType: WorkflowType;
-    currAuditors: WorkflowAuditor[];
-    currStep: WorkflowTypeStep;
+    node: WrorkflowNode;
+    operators: WorkflowOperators[];
+    workflow_type: WorkflowType;
   };
 
   type WorkflowDetailRefResponse = {

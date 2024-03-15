@@ -195,7 +195,7 @@ export async function QueryWorkflowLogList(
 }
 
 /** 工作流详情 POST /workflow/detail */
-export async function QueryWorkflowDetail(id: number, options?: { [keys: string]: any }) {
+export async function fetchWorkflowDetail(id: number, options?: { [keys: string]: any }) {
   return request<API.CResult<WorkflowAPI.WorkflowDetail>>('/workflow/detail', {
     method: 'POST',
     params: { id },
