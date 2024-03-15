@@ -28,23 +28,23 @@ declare namespace WorkflowAPI {
     org_id: number;
     only_name: string;
     system: number;
-    created_at: string;
-    updated_at?: string;
+    create_time: string;
+    update_time?: string;
   };
 
   type WorkflowNode = {
     id: number;
-    workflow_type_id: number;
+    type_id: number;
+    node: number;
     name: string;
-    step: number;
     action?: string;
     action_value?: number | number[];
+    everyone?: number;
+    create_time?: string;
+    update_time?: string;
+    // todo 以下部分暂未实现
     condition?: string;
     condition_fail?: string;
-    everyone?: number;
-    created_at?: string;
-    updated_at?: string;
-    [x: string]: any[];
   };
 
   type WorkflowLog = {

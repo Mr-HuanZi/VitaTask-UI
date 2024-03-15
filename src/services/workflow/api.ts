@@ -149,9 +149,18 @@ export async function WorkflowStatusList(options?: { [key: string]: any }) {
   });
 }
 
-/** 工作流流转处理 POST /workflow/handle */
-export async function WorkflowHandle(body: any, options?: { [keys: string]: any }) {
-  return request<API.CResult>('/workflow/handle', {
+/** 工作流流转处理 POST /workflow/examine-approve */
+export async function WorkflowExamineApprove(
+  body: {
+    id: number;
+    action?: 'next' | 'overrule' | 'cancel';
+    explain?: string;
+    node?: number;
+    data?: any;
+  },
+  options?: { [keys: string]: any }
+) {
+  return request<API.CResult>('/workflow/examine-approve', {
     method: 'POST',
     data: body,
     ...(options || {}),

@@ -3,7 +3,7 @@ import { Button, Descriptions, message, Modal, Space, Typography } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import { useParams } from 'umi';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
-import {fetchWorkflowDetail, WorkflowHandle, WorkflowNodeLists} from '@/services/workflow/api';
+import {fetchWorkflowDetail, WorkflowExamineApprove, WorkflowNodeLists} from '@/services/workflow/api';
 import { history } from '@@/core/history';
 import { useModel } from '@@/plugin-model/useModel';
 import Logs from '@/pages/Workflow/Detail/Logs';
@@ -114,7 +114,7 @@ const Detail: React.FC = () => {
             return;
           }
         }
-        WorkflowHandle({ id: workflowId, data: workflowData, remarks })
+        WorkflowExamineApprove({ id: workflowId, data: workflowData, explain: remarks })
           .then((result) => {
             if (codeOk(result.code)) {
               message.success('操作成功');
@@ -162,17 +162,17 @@ const Detail: React.FC = () => {
         if (formData?.back === true) {
           // 退回上一步
           for (let i = 0; i < nodes.length; i++) {
-            if (nodes[i].step >= (workflowDetail?.workflow?.node ?? 0)) {
-              formData.step = nodes[i <= 0 ? 0 : i - 1].step;
+            if (nodes[i].node >= (workflowDetail?.workflow?.node ?? 0)) {
+              formData.node = nodes[i <= 0 ? 0 : i - 1].node;
               break;
             }
           }
         }
-        WorkflowHandle({
+        WorkflowExamineApprove({
           id: workflowId,
-          overrule: true,
           explain: formData?.explain ?? '',
-          step: formData?.step ?? 0,
+          node: formData?.node ?? 0,
+          action: 'overrule',
         }).then((result) => {
           hide();
           if (codeOk(result.code)) {
@@ -181,20 +181,22 @@ const Detail: React.FC = () => {
             history.push('/workflow/to-do');
           }
           setLoading(false);
+        }).finally(() => {
+          hide();
         });
       }}
     >
       <ProFormCheckbox name="back" className={`m-b-15`}>
-        退回上一步
+        退回上一个节点
       </ProFormCheckbox>
       <ProFormSelect
-        label="退至步骤"
-        name="step"
+        label="退至节点"
+        name="node"
         options={nodes.map((item) => {
           return {
-            value: item.step,
+            value: item.node,
             label: item.name,
-            disabled: (workflowDetail?.workflow?.node ?? 0) <= item.step,
+            disabled: (workflowDetail?.workflow?.node ?? 0) <= item.node,
           };
         })}
       />
