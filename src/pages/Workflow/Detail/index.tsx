@@ -62,8 +62,8 @@ const Detail: React.FC = () => {
       if (codeOk(result.code)) {
         const { data } = result;
         if (data?.operators) {
-          data.auditorIds = data.operators.map((item: any) => {
-            return item.userid ?? 0;
+          data.operatorIds = data.operators.map((item: any) => {
+            return item.user_id ?? 0;
           });
         }
         setWorkflowDetail(data);
@@ -268,7 +268,7 @@ const Detail: React.FC = () => {
       tabActiveKey={pageContext}
       onTabChange={(key: string) => setPageContext(key)}
       extra={
-        workflowDetail?.auditorIds && workflowDetail.auditorIds.indexOf(currentUser.id) !== -1
+        workflowDetail?.operatorIds && workflowDetail.operatorIds.indexOf(currentUser.id) !== -1
           ? extra
           : []
       }
