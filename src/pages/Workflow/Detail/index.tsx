@@ -70,7 +70,11 @@ const Detail: React.FC = () => {
         setWorkflowId(data?.workflow?.id ?? 0);
         setRemarks(data?.workflow?.remarks ?? '');
         // 拉取所有节点
-        WorkflowNodeLists({ type_id: data?.workflow?.type_id ?? 0 }).then((res) => {
+        WorkflowNodeLists({
+          type_id: data?.workflow?.type_id ?? 0,
+          page: 1,
+          pageSize: 9999,
+        }).then((res) => {
           if (codeOk(res.code)) {
             setNodes(res?.data?.items ?? []);
           }
