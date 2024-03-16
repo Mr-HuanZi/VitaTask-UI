@@ -194,7 +194,7 @@ export async function QueryWorkflowLogList(
   },
   options?: { [key: string]: any },
 ) {
-  return request<API.CResult<API.PageResult<WorkflowAPI.WorkflowLog[]>>>('/workflow/log/lists', {
+  return request<API.CResult<API.PageResult<WorkflowAPI.WorkflowLogVo[]>>>('/workflow/log/lists', {
     method: 'POST',
     data: {
       ...params,

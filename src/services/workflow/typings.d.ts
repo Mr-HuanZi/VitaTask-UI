@@ -61,6 +61,18 @@ declare namespace WorkflowAPI {
     step_info?: WorkflowTypeStep;
   };
 
+  type WorkflowLogVo = {
+    id: number;
+    node: number;
+    workflow_id: number;
+    operator: number;
+    nickname: string;
+    explain: string;
+    action: string;
+    create_time?: string;
+    node_info?: WorkflowNode;
+  };
+
   type WorkflowOperators = {
     id: number;
     workflow_id: number;
