@@ -6,6 +6,8 @@ import { GridContent } from '@ant-design/pro-layout';
 import styles from './index.less';
 import { history, useParams } from 'umi';
 import {fetchWorkflowDetail, QueryFootprint} from '@/services/workflow/api';
+import {codeOk} from "@/units";
+import moment from "moment/moment";
 
 const { Step } = Steps;
 
@@ -22,7 +24,7 @@ const Desc: FC<{ auditors: any }> = ({ auditors }) => {
 const Success: FC = () => {
   const routeParams: any = useParams();
 
-  const [steps, setSteps] = useState<WorkflowAPI.WorkflowNode[]>();
+  const [nodes, setNodes] = useState<WorkflowAPI.WorkflowNode[]>();
   const [curr, setCurr] = useState<number>(0);
   const [workflowId, setWorkflowId] = useState<number>(0);
   const [workflowDetail, setWorkflowDetail] = useState<any>();
@@ -31,13 +33,13 @@ const Success: FC = () => {
     const { id } = routeParams;
     setWorkflowId(id);
     QueryFootprint(id).then((result) => {
-      if (result.code === 1) {
-        setSteps(result.data?.steps);
+      if (codeOk(result.code)) {
+        setNodes(result.data?.nodes);
         setCurr(parseInt(result.data?.curr) - 1);
       }
     });
     fetchWorkflowDetail(id).then((result) => {
-      if (result.code === 1) {
+      if (codeOk(result.code)) {
         const { data } = result;
         setWorkflowDetail(data ?? {});
       }
@@ -71,20 +73,23 @@ const Success: FC = () => {
           {workflowDetail?.workflow?.serials ?? '-'}
         </Descriptions.Item>
         <Descriptions.Item label="发起人">
-          {workflowDetail?.workflow?.user?.clerk?.nickname ?? ''}
+          {workflowDetail?.workflow?.nickname ?? ''}
         </Descriptions.Item>
         <Descriptions.Item label="发起时间">
-          {workflowDetail?.workflow?.created_at ?? '-'}
+          {
+            workflowDetail?.workflow?.create_time ?
+              moment(workflowDetail?.workflow?.create_time).format('YYYY-MM-DD HH:mm:ss') : '-'
+          }
         </Descriptions.Item>
       </Descriptions>
       <br />
       <Steps progressDot current={curr}>
-        {steps?.map((item) => {
-          if (item?.auditors) {
+        {nodes?.map((item) => {
+          if (item?.name) {
             return (
               <Step
                 title={<span style={{ fontSize: 14 }}>{item.name}</span>}
-                description={<Desc auditors={item.auditors} />}
+                description={<Desc auditors={item.name} />}
               />
             );
           } else return <Step title={<span style={{ fontSize: 14 }}>{item.name}</span>} />;

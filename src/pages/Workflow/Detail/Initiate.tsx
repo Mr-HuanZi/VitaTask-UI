@@ -72,7 +72,7 @@ const Initiate: React.FC = () => {
           .then((result) => {
             if (codeOk(result.code)) {
               message.success('操作成功').then();
-              history.push(`/workflow/success/${result.data?.workflow?.id ?? 0}`);
+              history.push(`/workflow/success/${result.data?.id ?? 0}`);
             }
           })
           .finally(() => {
