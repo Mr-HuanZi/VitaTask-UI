@@ -107,6 +107,20 @@ declare namespace WorkflowAPI {
     action?: string;
   };
 
+  type WorkflowFootprintOperator = {
+    uid: number;
+    nickname: string;
+  }
+
+  type WorkflowFootprint = {
+    node: number;
+    name: string;
+    curr: boolean;
+    explain: string;
+    operators: WorkflowFootprintOperator[];
+    time: string;
+  }
+
   interface DetailContentRef {
     submit: () => Promise<WorkflowDetailRefResponse>;
     overrule: () => Promise<WorkflowDetailRefResponse>;

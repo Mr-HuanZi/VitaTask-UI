@@ -253,11 +253,11 @@ export async function WorkflowList(
   });
 }
 
-/** 足迹 POST /workflow/footprint */
+/** 足迹 POST /workflow/log/footprint */
 export async function QueryFootprint(workflow_id: number, options?: { [key: string]: any }) {
-  return request<API.CResult<any>>('/workflow/footprint', {
+  return request<API.CResult<WorkflowAPI.WorkflowFootprint[]>>('/workflow/log/footprint', {
     method: 'POST',
-    data: { workflow_id },
+    data: { id: workflow_id },
     ...(options || {}),
   });
 }

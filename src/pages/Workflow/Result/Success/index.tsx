@@ -1,22 +1,34 @@
-import { Button, Card, Descriptions, Result, Space, Steps } from 'antd';
-import type { FC } from 'react';
-import { Fragment, useEffect, useState } from 'react';
-import { GridContent } from '@ant-design/pro-layout';
+import { Button, Card, Descriptions, Divider, Result, Space, Steps, Typography } from 'antd';
+import type { FC, SetStateAction} from 'react';
+import {Fragment, useEffect, useState} from 'react';
+import {GridContent} from '@ant-design/pro-layout';
 
 import styles from './index.less';
-import { history, useParams } from 'umi';
+import {history, useParams} from 'umi';
 import {fetchWorkflowDetail, QueryFootprint} from '@/services/workflow/api';
 import {codeOk} from "@/units";
 import moment from "moment/moment";
 
-const { Step } = Steps;
+const {Step} = Steps;
 
-const Desc: FC<{ auditors: any }> = ({ auditors }) => {
+const Desc: FC<{ operators?: WorkflowAPI.WorkflowFootprintOperator[], explain?: string }> = ({operators, explain}) => {
   return (
     <div className={styles.title}>
-      <div style={{ margin: '8px 0 4px' }}>
-        <Space>{auditors}</Space>
-      </div>
+
+      {
+        operators && (
+          <div style={{margin: '8px 0 4px'}}>
+            <Space split={<Divider type="vertical" />}>
+            {
+              operators.map(item => <Typography.Link key={item.uid}>{item.nickname}</Typography.Link>)
+            }
+            </Space>
+          </div>
+        )
+      }
+      {
+        explain && <div>操作说明：{explain}</div>
+      }
     </div>
   );
 };
@@ -24,18 +36,24 @@ const Desc: FC<{ auditors: any }> = ({ auditors }) => {
 const Success: FC = () => {
   const routeParams: any = useParams();
 
-  const [nodes, setNodes] = useState<WorkflowAPI.WorkflowNode[]>();
+  const [footprint, setFootprint] = useState<WorkflowAPI.WorkflowFootprint[]>();
   const [curr, setCurr] = useState<number>(0);
   const [workflowId, setWorkflowId] = useState<number>(0);
   const [workflowDetail, setWorkflowDetail] = useState<any>();
 
   useEffect(() => {
-    const { id } = routeParams;
+    const {id} = routeParams;
     setWorkflowId(id);
-    QueryFootprint(id).then((result) => {
+    QueryFootprint(parseInt(id)).then((result) => {
       if (codeOk(result.code)) {
-        setNodes(result.data?.nodes);
-        setCurr(parseInt(result.data?.curr) - 1);
+        const d = result?.data ?? [];
+        setFootprint(d);
+        // SetStateAction<number> 是IDE给的，我也不知道为啥
+        d.map((item: WorkflowAPI.WorkflowFootprint, index: SetStateAction<number>) => {
+          if (item.curr) {
+            setCurr(index);
+          }
+        });
       }
     });
     fetchWorkflowDetail(id).then((result) => {
@@ -83,16 +101,17 @@ const Success: FC = () => {
         </Descriptions.Item>
       </Descriptions>
       <br />
-      <Steps progressDot current={curr}>
-        {nodes?.map((item) => {
+      <Steps progressDot current={workflowDetail?.workflow?.status === 1 ? (footprint ? footprint.length - 1 : 0) : curr}>
+        {footprint?.map((item) => {
           if (item?.name) {
             return (
               <Step
                 title={<span style={{ fontSize: 14 }}>{item.name}</span>}
-                description={<Desc auditors={item.name} />}
+                description={<Desc operators={item.operators} explain={item?.explain} />}
+                subTitle={item?.time ? moment(item.time).format('YYYY-MM-DD HH:mm') : undefined}
               />
             );
-          } else return <Step title={<span style={{ fontSize: 14 }}>{item.name}</span>} />;
+          } else return <Step title={<span style={{ fontSize: 14 }}>未知</span>} />;
         })}
       </Steps>
     </>
