@@ -155,6 +155,7 @@ export async function WorkflowExamineApprove(
     id: number;
     action?: 'next' | 'overrule' | 'cancel';
     explain?: string;
+    remarks?: string;
     node?: number;
     data?: any;
   },

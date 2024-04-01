@@ -1,8 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Button, Descriptions, message, Modal, Space, Typography } from 'antd';
+import { Button, Descriptions, message, Space, Typography } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import { useParams } from 'umi';
-import { ExclamationCircleOutlined } from '@ant-design/icons';
 import {fetchWorkflowDetail, WorkflowExamineApprove, WorkflowNodeLists} from '@/services/workflow/api';
 import { history } from '@@/core/history';
 import { useModel } from '@@/plugin-model/useModel';
@@ -21,7 +20,6 @@ import BasicException from '@/exceptions/BasicException';
 import moment from "moment";
 import WorkflowStatusBadge from "@/pages/Workflow/components/WorkflowStatusBadge";
 
-const { confirm } = Modal;
 const { Title, Paragraph } = Typography;
 
 const tabList = [
@@ -82,53 +80,6 @@ const Detail: React.FC = () => {
       }
     });
   }, [routeParams]);
-
-  const submitExamineApprove = () => {
-    confirm({
-      title: '确定?',
-      icon: <ExclamationCircleOutlined />,
-      content: '通过后将进入下一个审核步骤!',
-      onOk: async () => {
-        const hide = message.loading('加载中');
-        setLoading(true);
-        let workflowData: any = {};
-        // 先执行子组件的方法
-        if (detailContentActionRef.current?.submit !== undefined) {
-          try {
-            const result = await detailContentActionRef.current?.submit();
-            // 工作流子表数据
-            workflowData = result.data ?? null;
-          } catch (e: any) {
-            hide();
-            setLoading(false);
-            if (e instanceof BasicException) {
-              message.error(e.message);
-            } else if ('errorFields' in e) {
-              // 表单校验失败
-              const { errorFields } = e;
-              message.error(errorFields[0]?.errors);
-            } else {
-              console.error(e);
-              message.error('提交数据失败');
-            }
-            return;
-          }
-        }
-        WorkflowExamineApprove({ id: workflowId, data: workflowData, explain: remarks })
-          .then((result) => {
-            if (codeOk(result.code)) {
-              message.success('操作成功');
-              // 返回列表页
-              history.push(`/workflow/success/${workflowId}`);
-            }
-          })
-          .finally(() => {
-            hide();
-            setLoading(false);
-          });
-      },
-    });
-  };
 
   const extra = [
     <ModalForm
@@ -207,16 +158,68 @@ const Detail: React.FC = () => {
         rules={[{ required: true }]}
       />
     </ModalForm>,
-    <Button
-      key="1"
-      type="primary"
-      shape="round"
-      size="large"
-      loading={loading}
-      onClick={submitExamineApprove}
+    <ModalForm
+      key="pass"
+      title="确定？通过后将进入下一个审核步骤！"
+      trigger={
+        <Button
+          type="primary"
+          shape="round"
+          size="large"
+          loading={loading}
+        >
+          {workflowDetail?.workflow?.node === 1 ? '提交' : '通过'}
+        </Button>
+      }
+      onFinish={async (formData) => {
+        const hide = message.loading('加载中');
+        setLoading(true);
+        let workflowData: any = {};
+        // 先执行子组件的方法
+        if (detailContentActionRef.current?.submit !== undefined) {
+          try {
+            const result = await detailContentActionRef.current?.submit();
+            // 工作流子表数据
+            workflowData = result.data ?? null;
+          } catch (e: any) {
+            hide();
+            setLoading(false);
+            if (e instanceof BasicException) {
+              message.error(e.message);
+            } else if ('errorFields' in e) {
+              // 表单校验失败
+              const {errorFields} = e;
+              message.error(errorFields[0]?.errors);
+            } else {
+              console.error(e);
+              message.error('提交数据失败');
+            }
+            return;
+          }
+        }
+        WorkflowExamineApprove({
+          id: workflowId,
+          data: workflowData,
+          explain: formData?.explain ?? '',
+          remarks: remarks,
+        }).then((result) => {
+          if (codeOk(result.code)) {
+            message.success('操作成功');
+            // 返回列表页
+            history.push(`/workflow/success/${workflowId}`);
+          }
+        }).finally(() => {
+          hide();
+          setLoading(false);
+        });
+      }}
     >
-      {workflowDetail?.workflow?.node === 1 ? '提交' : '通过'}
-    </Button>,
+      <ProFormTextArea
+        label="要不要写点什么?"
+        name="explain"
+        placeholder="您可以写一些文字来提醒下一个人"
+      />
+    </ModalForm>,
   ];
 
   const content = (
