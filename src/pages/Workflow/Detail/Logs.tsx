@@ -28,7 +28,13 @@ const Logs: React.FC<LogsPropsI> = ({ workflowId }) => {
       dataIndex: 'action_name',
       render: (dom, entity) => {
         const actionColor = { initiate: 'blue', pass: 'green', overrule: 'orange', reject: 'red' };
-        return <Tag color={actionColor?.[entity.action] ?? 'default'}>{entity.action}</Tag>;
+        const actionText = {
+          initiate: '发起',
+          pass: '通过',
+          overrule: '驳回',
+          reject: '撤销',
+        };
+        return <Tag color={actionColor?.[entity.action] ?? 'default'}>{actionText?.[entity.action]}</Tag>;
       },
     },
     {
