@@ -14,8 +14,8 @@ declare namespace WorkflowAPI {
     status: number;
     node: number;
     end: boolean;
-    node_info?: WorkflowNode;
-    operator?: WorkflowAuditor[];
+    status_text?: string;
+    remarks?: string;
     submit_num: number;
     create_time?: string;
     update_time?: string;
@@ -28,23 +28,23 @@ declare namespace WorkflowAPI {
     org_id: number;
     only_name: string;
     system: number;
-    created_at: string;
-    updated_at?: string;
+    create_time: string;
+    update_time?: string;
   };
 
   type WorkflowNode = {
     id: number;
-    workflow_type_id: number;
+    type_id: number;
+    node: number;
     name: string;
-    step: number;
     action?: string;
     action_value?: number | number[];
+    everyone?: number;
+    create_time?: string;
+    update_time?: string;
+    // todo 以下部分暂未实现
     condition?: string;
     condition_fail?: string;
-    everyone?: number;
-    created_at?: string;
-    updated_at?: string;
-    [x: string]: any[];
   };
 
   type WorkflowLog = {
@@ -61,24 +61,33 @@ declare namespace WorkflowAPI {
     step_info?: WorkflowTypeStep;
   };
 
-  type WorkflowAuditor = {
+  type WorkflowLogVo = {
     id: number;
-    step: number;
+    node: number;
+    workflow_id: number;
+    operator: number;
+    nickname: string;
+    explain: string;
+    action: string;
+    create_time?: string;
+    node_info?: WorkflowNode;
+  };
+
+  type WorkflowOperators = {
+    id: number;
     workflow_id: number;
     userid: number;
     nickname: string;
     handled: number;
-    created_at?: string;
-    updated_at?: string;
-  };
+    node: number;
+  }
 
   type WorkflowDetail = {
     [x: string]: any[];
     workflow: Workflow;
-    workflowData: any;
-    workflowType: WorkflowType;
-    currAuditors: WorkflowAuditor[];
-    currStep: WorkflowTypeStep;
+    node: WrorkflowNode;
+    operators: WorkflowOperators[];
+    workflow_type: WorkflowType;
   };
 
   type WorkflowDetailRefResponse = {
@@ -97,6 +106,20 @@ declare namespace WorkflowAPI {
     name?: string;
     action?: string;
   };
+
+  type WorkflowFootprintOperator = {
+    uid: number;
+    nickname: string;
+  }
+
+  type WorkflowFootprint = {
+    node: number;
+    name: string;
+    curr: boolean;
+    explain: string;
+    operators: WorkflowFootprintOperator[];
+    time: string;
+  }
 
   interface DetailContentRef {
     submit: () => Promise<WorkflowDetailRefResponse>;

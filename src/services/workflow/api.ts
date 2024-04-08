@@ -149,9 +149,19 @@ export async function WorkflowStatusList(options?: { [key: string]: any }) {
   });
 }
 
-/** 工作流流转处理 POST /workflow/handle */
-export async function WorkflowHandle(body: any, options?: { [keys: string]: any }) {
-  return request<API.CResult>('/workflow/handle', {
+/** 工作流流转处理 POST /workflow/examine-approve */
+export async function WorkflowExamineApprove(
+  body: {
+    id: number;
+    action?: 'next' | 'overrule' | 'cancel';
+    explain?: string;
+    remarks?: string;
+    node?: number;
+    data?: any;
+  },
+  options?: { [keys: string]: any }
+) {
+  return request<API.CResult>('/workflow/examine-approve', {
     method: 'POST',
     data: body,
     ...(options || {}),
@@ -185,7 +195,7 @@ export async function QueryWorkflowLogList(
   },
   options?: { [key: string]: any },
 ) {
-  return request<API.CResult<API.PageResult<WorkflowAPI.WorkflowLog[]>>>('/workflow/log/lists', {
+  return request<API.CResult<API.PageResult<WorkflowAPI.WorkflowLogVo[]>>>('/workflow/log/lists', {
     method: 'POST',
     data: {
       ...params,
@@ -195,7 +205,7 @@ export async function QueryWorkflowLogList(
 }
 
 /** 工作流详情 POST /workflow/detail */
-export async function QueryWorkflowDetail(id: number, options?: { [keys: string]: any }) {
+export async function fetchWorkflowDetail(id: number, options?: { [keys: string]: any }) {
   return request<API.CResult<WorkflowAPI.WorkflowDetail>>('/workflow/detail', {
     method: 'POST',
     params: { id },
@@ -244,11 +254,11 @@ export async function WorkflowList(
   });
 }
 
-/** 足迹 POST /workflow/footprint */
+/** 足迹 POST /workflow/log/footprint */
 export async function QueryFootprint(workflow_id: number, options?: { [key: string]: any }) {
-  return request<API.CResult<any>>('/workflow/footprint', {
+  return request<API.CResult<WorkflowAPI.WorkflowFootprint[]>>('/workflow/log/footprint', {
     method: 'POST',
-    data: { workflow_id },
+    data: { id: workflow_id },
     ...(options || {}),
   });
 }

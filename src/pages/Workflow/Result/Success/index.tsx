@@ -1,20 +1,34 @@
-import { Button, Card, Descriptions, Result, Space, Steps } from 'antd';
-import type { FC } from 'react';
-import { Fragment, useEffect, useState } from 'react';
-import { GridContent } from '@ant-design/pro-layout';
+import { Button, Card, Descriptions, Divider, Result, Space, Steps, Typography } from 'antd';
+import type { FC, SetStateAction} from 'react';
+import {Fragment, useEffect, useState} from 'react';
+import {GridContent} from '@ant-design/pro-layout';
 
 import styles from './index.less';
-import { history, useParams } from 'umi';
-import { QueryFootprint, QueryWorkflowDetail } from '@/services/workflow/api';
+import {history, useParams} from 'umi';
+import {fetchWorkflowDetail, QueryFootprint} from '@/services/workflow/api';
+import {codeOk} from "@/units";
+import moment from "moment/moment";
 
-const { Step } = Steps;
+const {Step} = Steps;
 
-const Desc: FC<{ auditors: any }> = ({ auditors }) => {
+const Desc: FC<{ operators?: WorkflowAPI.WorkflowFootprintOperator[], explain?: string }> = ({operators, explain}) => {
   return (
     <div className={styles.title}>
-      <div style={{ margin: '8px 0 4px' }}>
-        <Space>{auditors}</Space>
-      </div>
+
+      {
+        operators && (
+          <div style={{margin: '8px 0 4px'}}>
+            <Space split={<Divider type="vertical" />}>
+            {
+              operators.map(item => <Typography.Link key={item.uid}>{item.nickname}</Typography.Link>)
+            }
+            </Space>
+          </div>
+        )
+      }
+      {
+        explain && <div>操作说明：{explain}</div>
+      }
     </div>
   );
 };
@@ -22,22 +36,28 @@ const Desc: FC<{ auditors: any }> = ({ auditors }) => {
 const Success: FC = () => {
   const routeParams: any = useParams();
 
-  const [steps, setSteps] = useState<WorkflowAPI.WorkflowTypeStep[]>();
+  const [footprint, setFootprint] = useState<WorkflowAPI.WorkflowFootprint[]>();
   const [curr, setCurr] = useState<number>(0);
   const [workflowId, setWorkflowId] = useState<number>(0);
   const [workflowDetail, setWorkflowDetail] = useState<any>();
 
   useEffect(() => {
-    const { id } = routeParams;
+    const {id} = routeParams;
     setWorkflowId(id);
-    QueryFootprint(id).then((result) => {
-      if (result.code === 1) {
-        setSteps(result.data?.steps);
-        setCurr(parseInt(result.data?.curr) - 1);
+    QueryFootprint(parseInt(id)).then((result) => {
+      if (codeOk(result.code)) {
+        const d = result?.data ?? [];
+        setFootprint(d);
+        // SetStateAction<number> 是IDE给的，我也不知道为啥
+        d.map((item: WorkflowAPI.WorkflowFootprint, index: SetStateAction<number>) => {
+          if (item.curr) {
+            setCurr(index);
+          }
+        });
       }
     });
-    QueryWorkflowDetail(id).then((result) => {
-      if (result.code === 1) {
+    fetchWorkflowDetail(id).then((result) => {
+      if (codeOk(result.code)) {
         const { data } = result;
         setWorkflowDetail(data ?? {});
       }
@@ -71,23 +91,27 @@ const Success: FC = () => {
           {workflowDetail?.workflow?.serials ?? '-'}
         </Descriptions.Item>
         <Descriptions.Item label="发起人">
-          {workflowDetail?.workflow?.user?.clerk?.nickname ?? ''}
+          {workflowDetail?.workflow?.nickname ?? ''}
         </Descriptions.Item>
         <Descriptions.Item label="发起时间">
-          {workflowDetail?.workflow?.created_at ?? '-'}
+          {
+            workflowDetail?.workflow?.create_time ?
+              moment(workflowDetail?.workflow?.create_time).format('YYYY-MM-DD HH:mm:ss') : '-'
+          }
         </Descriptions.Item>
       </Descriptions>
       <br />
-      <Steps progressDot current={curr}>
-        {steps?.map((item) => {
-          if (item?.auditors) {
+      <Steps progressDot current={workflowDetail?.workflow?.status === 1 ? (footprint ? footprint.length - 1 : 0) : curr}>
+        {footprint?.map((item) => {
+          if (item?.name) {
             return (
               <Step
                 title={<span style={{ fontSize: 14 }}>{item.name}</span>}
-                description={<Desc auditors={item.auditors} />}
+                description={<Desc operators={item.operators} explain={item?.explain} />}
+                subTitle={item?.time ? moment(item.time).format('YYYY-MM-DD HH:mm') : undefined}
               />
             );
-          } else return <Step title={<span style={{ fontSize: 14 }}>{item.name}</span>} />;
+          } else return <Step title={<span style={{ fontSize: 14 }}>未知</span>} />;
         })}
       </Steps>
     </>

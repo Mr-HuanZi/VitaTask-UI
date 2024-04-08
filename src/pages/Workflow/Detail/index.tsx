@@ -1,9 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Button, Descriptions, message, Modal, Space, Typography } from 'antd';
+import { Button, Descriptions, message, Space, Typography } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import { useParams } from 'umi';
-import { ExclamationCircleOutlined } from '@ant-design/icons';
-import { QueryWorkflowDetail, WorkflowHandle, WorkflowNodeLists } from '@/services/workflow/api';
+import {fetchWorkflowDetail, WorkflowExamineApprove, WorkflowNodeLists} from '@/services/workflow/api';
 import { history } from '@@/core/history';
 import { useModel } from '@@/plugin-model/useModel';
 import Logs from '@/pages/Workflow/Detail/Logs';
@@ -15,12 +14,13 @@ import {
   ProFormText,
   ProFormTextArea,
 } from '@ant-design/pro-form';
-import { isEmpty } from '@/units';
+import {codeOk, isEmpty} from '@/units';
 import ProCard from '@ant-design/pro-card';
 import BasicException from '@/exceptions/BasicException';
+import moment from "moment";
+import WorkflowStatusBadge from "@/pages/Workflow/components/WorkflowStatusBadge";
 
-const { confirm } = Modal;
-const { Title } = Typography;
+const { Title, Paragraph } = Typography;
 
 const tabList = [
   {
@@ -37,99 +37,49 @@ const Detail: React.FC = () => {
   const detailContentActionRef = useRef<WorkflowAPI.DetailContentRef>();
 
   const { initialState } = useModel('@@initialState');
-  let currentUser: API.CurrentUser;
+  let currentUser: Partial<API.CurrentUser>;
   if (initialState?.currentUser) {
     currentUser = initialState?.currentUser;
   } else {
-    currentUser = {
-      avatar: '',
-      createTime: 0,
-      lastLoginTime: 0,
-      userStatus: 0,
-      userLogin: '',
-      id: 0,
-    };
+    currentUser = {};
   }
 
   // 获取路由参数
   const routeParams: any = useParams();
 
   const [loading, setLoading] = useState(false);
-  const [workflowDetail, setWorkflowDetail] = useState<any>();
+  const [workflowDetail, setWorkflowDetail] = useState<WorkflowAPI.WorkflowDetail>();
   const [workflowId, setWorkflowId] = useState<number>(0);
   const [pageContext, setPageContext] = useState<string>('detail');
-  const [stepLists, setStepLists] = useState<WorkflowAPI.WorkflowNode[]>([]);
+  const [nodes, setNodes] = useState<WorkflowAPI.WorkflowNode[]>([]);
   const [remarks, setRemarks] = useState<string>('');
 
   useEffect(() => {
     const { id } = routeParams;
-    QueryWorkflowDetail(id).then((result) => {
-      if (result.code === 1) {
+    fetchWorkflowDetail(id).then((result) => {
+      if (codeOk(result.code)) {
         const { data } = result;
-        if (data?.currAuditors) {
-          data.auditorIds = data.currAuditors.map((item: any) => {
-            return item.userid ?? 0;
+        if (data?.operators) {
+          data.operatorIds = data.operators.map((item: any) => {
+            return item.user_id ?? 0;
           });
         }
-        setWorkflowDetail(data ?? {});
+        setWorkflowDetail(data);
         setWorkflowId(data?.workflow?.id ?? 0);
         setRemarks(data?.workflow?.remarks ?? '');
         // 拉取所有节点
-        WorkflowNodeLists({ type_id: data?.workflow?.type_id ?? 0 }).then((res) => {
-          if (res.code === 1) {
-            setStepLists(res?.data?.items ?? []);
+        WorkflowNodeLists({
+          type_id: data?.workflow?.type_id ?? 0,
+          page: 1,
+          pageSize: 9999,
+        }).then((res) => {
+          if (codeOk(res.code)) {
+            setNodes(res?.data?.items ?? []);
           }
         });
       }
     });
   }, [routeParams]);
-
-  const submitExamineApprove = () => {
-    confirm({
-      title: '确定?',
-      icon: <ExclamationCircleOutlined />,
-      content: '通过后将进入下一个审核步骤!',
-      onOk: async () => {
-        const hide = message.loading('加载中');
-        setLoading(true);
-        let workflowData: any = {};
-        // 先执行子组件的方法
-        if (detailContentActionRef.current?.submit !== undefined) {
-          try {
-            const result = await detailContentActionRef.current?.submit();
-            // 工作流子表数据
-            workflowData = result.data ?? null;
-          } catch (e: any) {
-            hide();
-            setLoading(false);
-            if (e instanceof BasicException) {
-              message.error(e.message);
-            } else if ('errorFields' in e) {
-              // 表单校验失败
-              const { errorFields } = e;
-              message.error(errorFields[0]?.errors);
-            } else {
-              console.error(e);
-              message.error('提交数据失败');
-            }
-            return;
-          }
-        }
-        WorkflowHandle({ id: workflowId, data: workflowData, remarks })
-          .then((result) => {
-            if (result.code === 1) {
-              message.success('操作成功');
-              // 返回列表页
-              history.push(`/workflow/success/${workflowId}`);
-            }
-          })
-          .finally(() => {
-            hide();
-            setLoading(false);
-          });
-      },
-    });
-  };
 
   const extra = [
     <ModalForm
@@ -141,7 +91,7 @@ const Detail: React.FC = () => {
           shape="round"
           size="large"
           loading={loading}
-          disabled={workflowDetail?.workflow?.step === 1}
+          disabled={workflowDetail?.workflow?.node === 1}
         >
           驳回
         </Button>
@@ -162,40 +112,42 @@ const Detail: React.FC = () => {
         }
         if (formData?.back === true) {
           // 退回上一步
-          for (let i = 0; i < stepLists.length; i++) {
-            if (stepLists[i].step >= (workflowDetail?.workflow?.step ?? 0)) {
-              formData.step = stepLists[i <= 0 ? 0 : i - 1].step;
+          for (let i = 0; i < nodes.length; i++) {
+            if (nodes[i].node >= (workflowDetail?.workflow?.node ?? 0)) {
+              formData.node = nodes[i <= 0 ? 0 : i - 1].node;
               break;
             }
           }
         }
-        WorkflowHandle({
+        WorkflowExamineApprove({
           id: workflowId,
-          overrule: true,
           explain: formData?.explain ?? '',
-          step: formData?.step ?? 0,
+          node: formData?.node ?? 0,
+          action: 'overrule',
         }).then((result) => {
           hide();
-          if (result.code === 1) {
+          if (codeOk(result.code)) {
             message.success('操作成功').then();
             // 返回列表页
             history.push('/workflow/to-do');
           }
           setLoading(false);
+        }).finally(() => {
+          hide();
         });
       }}
     >
       <ProFormCheckbox name="back" className={`m-b-15`}>
-        退回上一步
+        退回上一个节点
       </ProFormCheckbox>
       <ProFormSelect
-        label="退至步骤"
-        name="step"
-        options={stepLists.map((item) => {
+        label="退至节点"
+        name="node"
+        options={nodes.map((item) => {
           return {
-            value: item.step,
+            value: item.node,
             label: item.name,
-            disabled: (workflowDetail?.workflow?.step ?? 0) <= item.step,
+            disabled: (workflowDetail?.workflow?.node ?? 0) <= item.node,
           };
         })}
       />
@@ -206,47 +158,106 @@ const Detail: React.FC = () => {
         rules={[{ required: true }]}
       />
     </ModalForm>,
-    <Button
-      key="1"
-      type="primary"
-      shape="round"
-      size="large"
-      loading={loading}
-      onClick={submitExamineApprove}
+    <ModalForm
+      key="pass"
+      title="确定？通过后将进入下一个审核步骤！"
+      trigger={
+        <Button
+          type="primary"
+          shape="round"
+          size="large"
+          loading={loading}
+        >
+          {workflowDetail?.workflow?.node === 1 ? '提交' : '通过'}
+        </Button>
+      }
+      onFinish={async (formData) => {
+        const hide = message.loading('加载中');
+        setLoading(true);
+        let workflowData: any = {};
+        // 先执行子组件的方法
+        if (detailContentActionRef.current?.submit !== undefined) {
+          try {
+            const result = await detailContentActionRef.current?.submit();
+            // 工作流子表数据
+            workflowData = result.data ?? null;
+          } catch (e: any) {
+            hide();
+            setLoading(false);
+            if (e instanceof BasicException) {
+              message.error(e.message);
+            } else if ('errorFields' in e) {
+              // 表单校验失败
+              const {errorFields} = e;
+              message.error(errorFields[0]?.errors);
+            } else {
+              console.error(e);
+              message.error('提交数据失败');
+            }
+            return;
+          }
+        }
+        WorkflowExamineApprove({
+          id: workflowId,
+          data: workflowData,
+          explain: formData?.explain ?? '',
+          remarks: remarks,
+        }).then((result) => {
+          if (codeOk(result.code)) {
+            message.success('操作成功');
+            // 返回列表页
+            history.push(`/workflow/success/${workflowId}`);
+          }
+        }).finally(() => {
+          hide();
+          setLoading(false);
+        });
+      }}
     >
-      {workflowDetail?.workflow?.step === 1 ? '提交' : '通过'}
-    </Button>,
+      <ProFormTextArea
+        label="要不要写点什么?"
+        name="explain"
+        placeholder="您可以写一些文字来提醒下一个人"
+      />
+    </ModalForm>,
   ];
 
   const content = (
     <Descriptions size="small" column={3}>
       <Descriptions.Item label="工作流标题">
-        {workflowDetail?.workflow?.title ?? ''}
+        {workflowDetail?.workflow?.title ?? '-'}
       </Descriptions.Item>
       <Descriptions.Item label="工作流编号">
-        {workflowDetail?.workflow?.serials ?? '-'}
+        {
+          workflowDetail?.workflow?.serials ? <Paragraph copyable>{workflowDetail.workflow.serials}</Paragraph> : '-'
+        }
       </Descriptions.Item>
       <Descriptions.Item label="工作流类型">
         {workflowDetail?.workflow?.type_name ?? '-'}
       </Descriptions.Item>
       <Descriptions.Item label="创建人">
-        {workflowDetail?.workflow?.user?.clerk?.nickname ?? ''}
+        {
+          workflowDetail?.workflow?.nickname ? <Paragraph copyable>{workflowDetail.workflow.nickname}</Paragraph> : '-'
+        }
       </Descriptions.Item>
       <Descriptions.Item label="创建时间">
-        {workflowDetail?.workflow?.created_at ?? '-'}
+        {
+          workflowDetail?.workflow?.create_time ?
+          moment(workflowDetail?.workflow?.create_time).format('YYYY-MM-DD HH:mm:ss') : '-'
+        }
       </Descriptions.Item>
       <Descriptions.Item label="当前步骤">
-        {workflowDetail?.currStep?.name ?? '-'}
+        {workflowDetail?.node?.name ?? '-'}
       </Descriptions.Item>
       <Descriptions.Item label="当前状态">
-        {workflowDetail?.workflow?.status_text ?? '-'}
+        <WorkflowStatusBadge status={workflowDetail?.workflow?.status ?? -1}/>
       </Descriptions.Item>
       <Descriptions.Item label="审批人">
         <Space>
-          {workflowDetail?.currAuditors &&
-            workflowDetail.currAuditors.map((item: any) => {
-              if (item.user?.clerk?.nickname) {
-                return <div>{item.user.clerk.nickname ?? ''}</div>;
+          {workflowDetail?.operators &&
+            workflowDetail.operators.map((item: any) => {
+              if (item?.nickname) {
+                return <div>{item.nickname ?? ''}</div>;
               }
               return '';
             })}
@@ -262,13 +273,13 @@ const Detail: React.FC = () => {
       tabActiveKey={pageContext}
       onTabChange={(key: string) => setPageContext(key)}
       extra={
-        workflowDetail?.auditorIds && workflowDetail.auditorIds.indexOf(currentUser.id) !== -1
+        workflowDetail?.operatorIds && workflowDetail.operatorIds.indexOf(currentUser.id) !== -1
           ? extra
           : []
       }
       content={content}
     >
-      {workflowDetail?.currStep?.step === 1 && (
+      {workflowDetail?.workflow?.node === 1 && (
         <ProCard title={<Title level={5}>备注</Title>} className={`m-b-15`}>
           <ProFormText
             label="说明"

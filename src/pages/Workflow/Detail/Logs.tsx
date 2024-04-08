@@ -3,31 +3,38 @@ import type { ProColumns } from '@ant-design/pro-table';
 import { ProTable } from '@ant-design/pro-table';
 import { Tag } from 'antd';
 import { QueryWorkflowLogList } from '@/services/workflow/api';
+import moment from "moment/moment";
 
 interface LogsPropsI {
   workflowId: number;
 }
 
 const Logs: React.FC<LogsPropsI> = ({ workflowId }) => {
-  const columns: ProColumns<WorkflowAPI.WorkflowLog>[] = [
+  const columns: ProColumns<WorkflowAPI.WorkflowLogVo>[] = [
     {
-      title: '步骤序号',
-      dataIndex: 'step',
+      title: '节点序号',
+      dataIndex: 'node',
       width: '80px',
     },
     {
-      title: '步骤',
-      dataIndex: 'step_info',
+      title: '节点',
+      dataIndex: 'node_info',
       render: (dom, entity) => {
-        return entity.step_info?.name ?? '-';
+        return entity.node_info?.name ?? '-';
       },
     },
     {
       title: '动作',
       dataIndex: 'action_name',
       render: (dom, entity) => {
-        const actionColor = { Initiate: 'blue', Pass: 'green', Overrule: 'orange', Reject: 'red' };
-        return <Tag color={actionColor?.[entity.action] ?? 'default'}>{entity.action_name}</Tag>;
+        const actionColor = { initiate: 'blue', pass: 'green', overrule: 'orange', reject: 'red' };
+        const actionText = {
+          initiate: '发起',
+          pass: '通过',
+          overrule: '驳回',
+          reject: '撤销',
+        };
+        return <Tag color={actionColor?.[entity.action] ?? 'default'}>{actionText?.[entity.action]}</Tag>;
       },
     },
     {
@@ -40,12 +47,15 @@ const Logs: React.FC<LogsPropsI> = ({ workflowId }) => {
     },
     {
       title: '操作时间',
-      dataIndex: 'created_at',
+      dataIndex: 'create_time',
+      render: (_, entity) => {
+        return entity?.create_time ? moment(entity?.create_time).format('YYYY-MM-DD HH:mm:ss') : '-';
+      },
     },
   ];
 
   return (
-    <ProTable<WorkflowAPI.WorkflowLog, WorkflowAPI.PageParams>
+    <ProTable<WorkflowAPI.WorkflowLogVo, WorkflowAPI.PageParams>
       rowKey="id"
       revalidateOnFocus={false}
       columns={columns}
