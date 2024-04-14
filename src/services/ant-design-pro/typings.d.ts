@@ -54,10 +54,10 @@ declare namespace API {
   };
 
   type FileVo = {
-    "file_name": string; // 文件名
-    "file_path": string; // 相对路径
-    "file_tag": string; // 文件Tag
-    "file_ext": string; // 文件扩展，带 . 号，例如：.jpg
+    "name": string; // 文件名
+    "url": string; // 相对路径
+    "tag": string; // 文件Tag
+    "ext": string; // 文件扩展，带 . 号，例如：.jpg
     "size": number; // 文件大小（字节）
     "base64"?: string;
   };

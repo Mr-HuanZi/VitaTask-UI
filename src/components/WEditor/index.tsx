@@ -51,7 +51,7 @@ const WEditor: React.FC<WEditorPropsI> = ({
             return;
           }
           // 缩略图放在 src
-          insertFn(data.file_path, data.file_tag, data?.file_path ?? '#');
+          insertFn(data.url, data.tag, data?.url ?? '#');
         },
       },
       // 视频上传
@@ -69,7 +69,7 @@ const WEditor: React.FC<WEditorPropsI> = ({
             return;
           }
           // 缩略图放在 src
-          insertFn(data?.file_path);
+          insertFn(data?.url);
         },
       },
     },
