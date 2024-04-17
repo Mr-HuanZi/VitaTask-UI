@@ -1,8 +1,10 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import type { ActionType, ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
 import {
-  WorkflowStatusList,
+  WorkflowHandled,
+  WorkflowList,
+  WorkflowStatusList, WorkflowTodo,
   WorkflowTypeOptions,
 } from '@/services/workflow/api';
 import { Link } from 'umi';
@@ -12,14 +14,20 @@ import {timestampToString} from "@/units";
 import type {ProSchemaValueEnumType} from "@ant-design/pro-utils/lib/typing";
 
 interface TableListPropsI {
-  requestFn: (params: any) => Promise<API.CResult<API.PageResult<any>>>;
+  requestType: string;
   ExcludedField?: string[];
   toolBarRender?: React.ReactNode[] | false;
+  actionRef?: React.MutableRefObject<ActionType | undefined>;
 }
 
-const TableList: React.FC<TableListPropsI> = ({requestFn, ExcludedField, toolBarRender}) => {
-  const actionRef = useRef<ActionType>();
-
+const TableList: React.FC<TableListPropsI> = (
+  {
+    requestType,
+    ExcludedField,
+    toolBarRender,
+    actionRef
+  }
+) => {
   const [statusEnum, setStatusEnum] = useState<Map<number, ProSchemaValueEnumType>>();
 
   useEffect(function (){
@@ -147,20 +155,37 @@ const TableList: React.FC<TableListPropsI> = ({requestFn, ExcludedField, toolBar
       revalidateOnFocus={false}
       toolBarRender={!toolBarRender ? toolBarRender: () => toolBarRender}
       request={async (params: any) => {
-        // 官方教程 https://procomponents.ant.design/components/table#request
-        // tips： 如果按照官方的教程来，我也不知道 params 里应该定义什么，索性直接这样就行
-        // 这里需要返回一个 Promise,在返回之前你可以进行数据转化
         // 如果需要转化参数可以在这里进行修改
         if (params?.status) {
           // 将其转换成数字类型
           params.status = Number(params.status);
         }
 
-        const result = await requestFn({
-          page: params.current,
-          pageSize: params.pageSize,
-          ...params,
-        });
+        let result;
+        switch (requestType) {
+          case 'initiated':
+          default:
+            result = await WorkflowList({
+              page: params.current,
+              pageSize: params.pageSize,
+              ...params,
+            });
+            break;
+          case 'todo':
+            result = await WorkflowTodo({
+              page: params.current,
+              pageSize: params.pageSize,
+              ...params,
+            });
+            break;
+          case 'completed':
+            result = await WorkflowHandled({
+              page: params.current,
+              pageSize: params.pageSize,
+              ...params,
+            });
+        }
+
         return {
           data: result?.data?.items ?? [],
           // success 请返回 true，

@@ -19,6 +19,8 @@ declare namespace WorkflowAPI {
     submit_num: number;
     create_time?: string;
     update_time?: string;
+    node_info?: WorkflowNode;
+    operator?: WorkflowOperators[];
   };
 
   type WorkflowType = {
