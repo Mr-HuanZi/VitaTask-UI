@@ -5,7 +5,7 @@ export type Payload = {
 
 export type HookType = 'chatData' | 'clientLink' | 'readNotice' | 'newFriend' | 'getFriendList' | 'memberIsOnline' | 'getChatList' | 'ping';
 
-export const ws: {
+export type WsConfig = {
   url: string,
   socket?: WebSocket,
   // 消息处理钩子
@@ -55,7 +55,9 @@ export const ws: {
   forbidReconnect: boolean,
   // 主动销毁
   destroyed: () => void,
-} = {
+};
+
+export const ws: WsConfig = {
   url: 'ws://127.0.0.1:8082',
   socket: undefined,
   // 消息处理钩子
