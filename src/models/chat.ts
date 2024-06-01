@@ -4,7 +4,7 @@ import type {Payload} from "@/services/websocket";
 import { ws } from "@/services/websocket";
 
 export default () => {
-  const url: string = 'ws://127.0.0.1:8082/chat';
+  const url: string = 'ws://127.0.0.1:18082/chat';
   const [messages, setMessages] = useState<Payload>();
   const [token, setToken] = useState<string>('');
 

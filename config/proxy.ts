@@ -11,7 +11,7 @@ export default {
     // localhost:8000/api/** -> http://127.0.0.1:8081/**
     '/v1': {
       // 要代理的地址
-      target: 'http://127.0.0.1:8081/',
+      target: 'http://127.0.0.1:18081/',
       // 配置了这个可以从 http 代理到 https
       // 依赖 origin 的功能可能需要这个，比如 cookie
       changeOrigin: true,
@@ -20,7 +20,7 @@ export default {
     '/uploads': {
       // 文件上传目录代理
       // 后端已做了静态资源目录转换
-      target: 'http://127.0.0.1:8081/',
+      target: 'http://127.0.0.1:18081/',
       changeOrigin: true,
     },
   },

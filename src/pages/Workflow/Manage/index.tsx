@@ -97,7 +97,7 @@ const Messages: React.FC = () => {
         >
           编辑
         </a>,
-        <Link key="steps" to={`/workflow/manage/nodes/${entity.id}`}>
+        <Link key="steps" to={`/settings/workflow/nodes/${entity.id}`}>
           节点管理
         </Link>,
       ],
