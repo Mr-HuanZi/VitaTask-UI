@@ -125,10 +125,58 @@ export async function WorkflowNodeAdd(
   });
 }
 
-/** 工作流节点修改 POST /workflow/node/actions */
+/** 获取工作流所有节点(无分页) POST /workflow/node/type_all */
+export async function fetchWorkflowNodeTypeAll(
+  id: number,
+  options?: { [key: string]: any },
+) {
+  return request<API.CResult<WorkflowAPI.WorkflowNode[]>>('/workflow/node/type_all', {
+    method: 'POST',
+    data: {id},
+    ...(options || {}),
+  });
+}
+
+/** 获取工作流节点操作类型列表 POST /workflow/node/actions */
 export async function FetchWorkflowNodeActions(options?: { [key: string]: any }) {
   return request<API.CResult<{ name: string; value: string }[]>>('/workflow/node/actions', {
     method: 'POST',
+    ...(options || {}),
+  });
+}
+
+/** 获取工作流节点操作类型列表 POST /workflow/node/actions */
+export async function fetchWorkflowNodeFirst(
+  id: number,
+  options?: { [key: string]: any },
+) {
+  return request<API.CResult<WorkflowAPI.WorkflowNode>>('/workflow/node/first', {
+    method: 'POST',
+    data: {id},
+    ...(options || {}),
+  });
+}
+
+/** 保存工作流节点表单设计数据 POST /workflow/node/save_schema */
+export async function saveWorkflowNodeSchema(
+  body: {id: number, schema: string},
+  options?: { [key: string]: any },
+) {
+  return request<API.CResult<WorkflowAPI.WorkflowNode>>('/workflow/node/save_schema', {
+    method: 'POST',
+    data: body,
+    ...(options || {}),
+  });
+}
+
+/** 获取工作流节点表单设计数据 POST /workflow/node/get_schema */
+export async function fetchWorkflowNodeSchema(
+  id: number,
+  options?: { [key: string]: any },
+) {
+  return request<API.CResult<string>>('/workflow/node/get_schema', {
+    method: 'POST',
+    data: {id},
     ...(options || {}),
   });
 }

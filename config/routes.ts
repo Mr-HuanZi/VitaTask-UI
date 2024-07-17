@@ -73,8 +73,7 @@ export default [
     name: '系统设置',
     icon: 'SettingOutlined',
     routes: [
-      {path: '/settings/workflow', name: '工作流管理', component: './Workflow/Manage', access: 'Admin'},
-      {path: '/settings/workflow/nodes/:id', name: '工作流节点', component: './Workflow/Manage/Nodes', hideInMenu: true},
+      {path: '/settings/workflow', name: '工作流管理', component: './Settings/Workflow', access: 'Admin'},
     ],
   },
   {path: '/', redirect: '/account/center'},

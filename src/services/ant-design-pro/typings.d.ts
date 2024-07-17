@@ -153,4 +153,9 @@ declare namespace API {
     description?: string;
     type?: NoticeIconItemType;
   };
+
+  type OptionItem = {
+    label: string;
+    value: any;
+  }
 }

@@ -40,13 +40,14 @@ declare namespace WorkflowAPI {
     node: number;
     name: string;
     action?: string;
-    action_value?: number | number[];
+    action_value?: any;
     everyone?: number;
     create_time?: string;
     update_time?: string;
     // todo 以下部分暂未实现
     condition?: string;
     condition_fail?: string;
+    action_option?: API.OptionItem;
   };
 
   type WorkflowLog = {
