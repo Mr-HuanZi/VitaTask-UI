@@ -145,7 +145,7 @@ export async function FetchWorkflowNodeActions(options?: { [key: string]: any })
   });
 }
 
-/** 获取工作流节点操作类型列表 POST /workflow/node/actions */
+/** 获取工作流第一个节点 POST /workflow/node/first */
 export async function fetchWorkflowNodeFirst(
   id: number,
   options?: { [key: string]: any },
