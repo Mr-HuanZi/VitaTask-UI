@@ -1,6 +1,6 @@
 // @ts-ignore
 /* eslint-disable */
-import { request } from 'umi';
+import { request } from '@umijs/max';
 
 /** 任务列表接口 POST /task/list */
 export async function queryTaskList(params: any, options?: { [key: string]: any }) {

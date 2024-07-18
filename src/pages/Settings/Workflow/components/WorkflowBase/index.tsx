@@ -1,8 +1,8 @@
 import React, {useCallback, useEffect, useRef, useState} from "react";
 import {WorkflowTypeAdd, WorkflowTypeDetail, WorkflowTypeUpdate} from "@/services/workflow/api";
 import {codeOk} from "@/units";
-import type { ProFormInstance} from "@ant-design/pro-form";
-import {ProForm, ProFormSwitch, ProFormText, ProFormTextArea} from "@ant-design/pro-form";
+import type { ProFormInstance} from "@ant-design/pro-components";
+import { ProForm, ProFormSwitch, ProFormText, ProFormTextArea } from "@ant-design/pro-components";
 import {message} from "antd";
 
 interface WorkflowBasePropsI {

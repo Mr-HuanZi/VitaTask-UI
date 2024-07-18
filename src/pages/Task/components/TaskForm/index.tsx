@@ -1,5 +1,5 @@
 import React from "react";
-import {ProForm, ProFormDateRangePicker, ProFormSelect, ProFormText} from "@ant-design/pro-form";
+import {ProForm, ProFormDateRangePicker, ProFormSelect, ProFormText} from "@ant-design/pro-components";
 import MemberProSelect from "@/components/MemberProSelect";
 import {projectSimpleList} from "@/services/project/api";
 import WEditor from "@/components/WEditor";

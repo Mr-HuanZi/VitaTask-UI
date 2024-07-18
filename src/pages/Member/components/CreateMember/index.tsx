@@ -1,8 +1,8 @@
 import type {FC} from "react";
 import {MemberCreate} from "@/services/member/api";
 import {codeOk, successMessage} from "@/units";
-import {ModalForm, ProForm, ProFormText} from "@ant-design/pro-form";
-import type {ModalFormProps} from "@ant-design/pro-form/es/layouts/ModalForm";
+import {ModalForm, ProForm, ProFormText} from "@ant-design/pro-components";
+import type {ModalFormProps} from "@ant-design/pro-components";
 
 interface CreateMemberProps {
   success?: () => void;

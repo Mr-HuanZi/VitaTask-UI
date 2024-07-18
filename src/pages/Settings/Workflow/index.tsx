@@ -1,10 +1,8 @@
 import React, {useRef, useState} from 'react';
-import {PageContainer} from '@ant-design/pro-layout';
-import type {ActionType, ProColumns} from '@ant-design/pro-table';
-import ProTable from '@ant-design/pro-table';
-import type {ProFormInstance} from '@ant-design/pro-form';
-import {Button, Drawer, Tabs} from 'antd';
-import {PlusOutlined} from '@ant-design/icons';
+import type { ActionType, ProColumns, ProFormInstance } from '@ant-design/pro-components';
+import { ProTable, PageContainer } from '@ant-design/pro-components';
+import { Button, Drawer, Tabs } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
 import {WorkflowTypeList,} from '@/services/workflow/api';
 import WorkflowBase from "./components/WorkflowBase";
 import WorkflowNodeEdit from "./components/WorkflowNodeEdit";

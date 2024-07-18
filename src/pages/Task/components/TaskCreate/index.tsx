@@ -1,7 +1,6 @@
 import React, {useEffect, useRef, useState} from "react";
-import type { ProFormInstance} from "@ant-design/pro-form";
-import {DrawerForm} from "@ant-design/pro-form";
-import type {DrawerFormProps} from "@ant-design/pro-form/lib/layouts/DrawerForm";
+import type {ProFormInstance, DrawerFormProps} from "@ant-design/pro-components";
+import {DrawerForm} from "@ant-design/pro-components";
 import {Button} from "antd";
 import {createTask} from "@/services/task/api";
 import {codeOk, proSelectComponentAssembleValue, successMessage} from "@/units";

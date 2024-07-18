@@ -1,5 +1,5 @@
 import {Space} from 'antd';
-import {useModel} from 'umi';
+import { useModel } from '@umijs/max';
 import Avatar from './AvatarDropdown';
 import HeaderSearch from '../HeaderSearch';
 import styles from './index.less';

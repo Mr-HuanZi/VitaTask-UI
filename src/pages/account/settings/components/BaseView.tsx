@@ -1,8 +1,8 @@
 import React from "react";
 import {Avatar, Col, Row, Typography} from "antd";
-import ProForm, {ProFormDatePicker, ProFormSelect, ProFormText, ProFormTextArea} from "@ant-design/pro-form";
+import {ProForm, ProFormDatePicker, ProFormSelect, ProFormText, ProFormTextArea} from "@ant-design/pro-components";
 import CustomProFormUploadButton from "@/components/CustomProFormUploadButton";
-import {useModel} from "@@/plugin-model/useModel";
+import { useModel } from '@umijs/max';
 import {changeAvatar, storeSelf} from "@/services/ant-design-pro/api";
 import {codeOk, errorMessage, formatUploadFiles, getProSelectComponentValue, successMessage} from "@/units";
 import NotLoggedIn from "@/pages/user/components/NotLoggedIn";

@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import styles from "./index.less";
 import {Avatar} from "antd";
-import {useModel} from "@@/plugin-model/useModel";
+import { useModel } from '@umijs/max';
 
 export interface DialogItemProps {
   author: string;

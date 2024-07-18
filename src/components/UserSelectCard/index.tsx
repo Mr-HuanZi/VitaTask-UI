@@ -1,7 +1,6 @@
 import type {CSSProperties} from 'react';
 import React, {useEffect, useState} from 'react';
-import {ProFormText, QueryFilter} from '@ant-design/pro-form';
-import {CheckCard} from '@ant-design/pro-card';
+import {ProFormText, QueryFilter, CheckCard} from '@ant-design/pro-components';
 import {MemberLists} from '@/services/member/api';
 import {Avatar, Modal, Pagination} from 'antd';
 import type {FormLayout} from 'antd/lib/form/Form';

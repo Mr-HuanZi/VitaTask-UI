@@ -1,6 +1,6 @@
 import React from 'react';
-import type { ProColumns } from '@ant-design/pro-table';
-import { ProTable } from '@ant-design/pro-table';
+import type { ProColumns } from '@ant-design/pro-components';
+import { ProTable } from '@ant-design/pro-components';
 import { Tag } from 'antd';
 import { QueryWorkflowLogList } from '@/services/workflow/api';
 import moment from "moment/moment";

@@ -1,6 +1,6 @@
 import React, {useRef} from "react";
-import type {ActionType, ProColumns} from "@ant-design/pro-table";
-import ProTable from "@ant-design/pro-table";
+import type {ActionType, ProColumns} from "@ant-design/pro-components";
+import {ProTable} from "@ant-design/pro-components";
 import {Avatar, Popconfirm, Typography} from "antd";
 import {deleteTask, queryTaskGroupSimpleList, queryTaskList} from "@/services/task/api";
 import TagEnum from "@/components/TagEnum";

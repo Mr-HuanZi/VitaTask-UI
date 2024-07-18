@@ -1,6 +1,6 @@
 /* eslint-disable */
 // @ts-ignore
-import { request } from 'umi';
+import { request } from '@umijs/max';
 
 /** 项目列表接口 POST /project/list */
 export async function queryProjects(params: any, options?: { [key: string]: any }) {

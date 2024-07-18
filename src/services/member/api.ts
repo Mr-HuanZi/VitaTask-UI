@@ -1,6 +1,6 @@
 // @ts-ignore
 /* eslint-disable */
-import { request } from 'umi';
+import { request } from '@umijs/max';
 
 /** 成员列表接口 POST /member/lists */
 export async function MemberLists(

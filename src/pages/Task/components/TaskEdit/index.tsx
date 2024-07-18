@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from "react";
-import type {ProFormInstance} from "@ant-design/pro-form";
-import ProForm from "@ant-design/pro-form";
+import type {ProFormInstance} from "@ant-design/pro-components";
+import {ProForm} from "@ant-design/pro-components";
 import {fetchTask, updateTask} from "@/services/task/api";
 import {
   codeOk,

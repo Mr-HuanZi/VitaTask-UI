@@ -1,13 +1,13 @@
 import React, {useEffect, useState} from 'react';
-import type { ActionType, ProColumns } from '@ant-design/pro-table';
-import ProTable from '@ant-design/pro-table';
+import type { ActionType, ProColumns } from '@ant-design/pro-components';
+import {ProTable} from '@ant-design/pro-components';
 import {
   WorkflowHandled,
   WorkflowList,
   WorkflowStatusList, WorkflowTodo,
   WorkflowTypeOptions,
 } from '@/services/workflow/api';
-import { Link } from 'umi';
+import { Link } from '@umijs/max';
 import { Space } from 'antd';
 import { QueryMemberSimpleLists } from '@/services/member/api';
 import {timestampToString} from "@/units";

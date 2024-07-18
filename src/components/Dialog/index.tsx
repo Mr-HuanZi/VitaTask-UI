@@ -1,12 +1,12 @@
 import React, {useEffect, useRef, useState} from "react";
-import type {ProFormInstance} from "@ant-design/pro-form";
-import {ProForm, ProFormTextArea} from "@ant-design/pro-form";
+import type {ProFormInstance} from "@ant-design/pro-components";
+import {ProForm, ProFormTextArea} from "@ant-design/pro-components";
 import styles from "./index.less";
 import DialogList from "@/components/Dialog/DialogList";
 import type {DialogItemProps} from "@/components/Dialog/DialogItem";
 import {dialogMsgList, dialogSendText} from "@/services/dialog/api";
 import {codeOk, errorMessage, timestampToString} from "@/units";
-import {useModel} from "@@/plugin-model/useModel";
+import { useModel } from '@umijs/max';
 
 interface DialogProps {
   dialogId?: number;

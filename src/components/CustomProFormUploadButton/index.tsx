@@ -1,5 +1,5 @@
 import React from 'react';
-import { ProFormUploadButton } from '@ant-design/pro-form';
+import { ProFormUploadButton } from '@ant-design/pro-components';
 import type { ItemRender } from 'antd/lib/upload/interface';
 import {errorMessage} from "@/units";
 import type {ProFormUploadButtonProps} from "@ant-design/pro-form/es/components/UploadButton";

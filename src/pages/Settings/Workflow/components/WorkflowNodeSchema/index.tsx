@@ -1,10 +1,10 @@
 import React, {useEffect, useRef, useState} from "react";
-import Generator from "fr-generator";
 import {fetchWorkflowNodeSchema, fetchWorkflowNodeTypeAll, saveWorkflowNodeSchema} from "@/services/workflow/api";
 import {codeOk} from "@/units";
 import {Divider, message, Segmented, Space, Spin, Typography} from "antd";
 import type { SegmentedValue } from "antd/lib/segmented";
 import {useRequest} from "@@/plugin-request/request";
+import SchemaBuilder from '@xrenders/schema-builder';
 
 interface WorkflowNodeFormPropsI {
   id: number;
@@ -67,25 +67,24 @@ const WorkflowNodeSchema: React.FC<WorkflowNodeFormPropsI> = ({id, updateTime}) 
       </Space>
       <Divider />
       <Spin tip="Loading..." spinning={spinning}>
-        <Generator
+        <SchemaBuilder
           ref={genRef}
-          extraButtons={[
-            true, true, true, false,
-            {
-              text: '保存',
-              type: "primary",
-              onClick: () => {
-                if (currentNodeId) {
-                  setSpinning(true);
-                  saveWorkflowNodeSchema({id: currentNodeId, schema: JSON.stringify(genRef.current?.getValue())}).then((result) => {
-                    if (codeOk(result.code)) {
-                      message.success(result.message).then();
-                    }
-                  }).finally(() => setSpinning(false));
-                }
+          importBtn={true}
+          exportBtn={true}
+          saveBtn={{
+            text: '保存',
+            order: 1,
+            onClick: () => {
+              if (currentNodeId) {
+                setSpinning(true);
+                saveWorkflowNodeSchema({id: currentNodeId, schema: JSON.stringify(genRef.current?.getValue())}).then((result) => {
+                  if (codeOk(result.code)) {
+                    message.success(result.message).then();
+                  }
+                }).finally(() => setSpinning(false));
               }
             }
-          ]}
+          }}
         />
       </Spin>
     </>

@@ -4,13 +4,12 @@ import React, {useEffect, useState} from 'react';
 import {GridContent} from '@ant-design/pro-layout';
 import type {RouteChildrenProps} from 'react-router';
 import styles from './Center.less';
-import {useModel} from "@@/plugin-model/useModel";
+import { useModel, Link } from '@umijs/max';
 import NotLoggedIn from "@/pages/user/components/NotLoggedIn";
 import {queryProjects} from "@/services/project/api";
 import {codeOk, errorMessage, timestampToString, toArray} from "@/units";
-import {Link} from 'umi';
 import UserItem from "@/components/UserItem";
-import ProCard from "@ant-design/pro-card";
+import { ProCard } from "@ant-design/pro-components";
 import {fetchTaskLogs} from "@/services/task/api";
 import TaskDetail from "@/pages/Task/components/TaskDetail";
 

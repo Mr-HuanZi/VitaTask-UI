@@ -1,7 +1,7 @@
 import React, {useEffect} from "react";
 import {WorkflowTypeList} from "@/services/workflow/api";
 import {codeOk} from "@/units";
-import {CheckCard} from '@ant-design/pro-card';
+import {CheckCard} from '@ant-design/pro-components';
 
 interface WorkflowTypeSelectPropsI {
   /** 选中的值 */

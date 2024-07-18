@@ -1,10 +1,9 @@
 import type {FC} from "react";
 import {useRef} from "react";
-import type {ActionType, ProColumns} from "@ant-design/pro-table";
-import {ProTable} from "@ant-design/pro-table";
+import type {ActionType, ProColumns} from "@ant-design/pro-components";
+import {ProTable, ModalForm} from "@ant-design/pro-components";
 import {Button, Popconfirm} from "antd";
 import {projectMemberBind, projectMemberList, projectMemberRemove} from "@/services/project/api";
-import {ModalForm} from "@ant-design/pro-form";
 import MemberProSelect from "@/components/MemberProSelect";
 import {codeOk, successMessage} from "@/units";
 import {PROJECT_MEMBER} from "@/constants/project";

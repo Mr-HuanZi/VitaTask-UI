@@ -1,4 +1,4 @@
-import ProCard from "@ant-design/pro-card";
+import ProCard from "@ant-design/pro-components";
 import {Col, Row, Space, Tag, Timeline, Typography} from "antd";
 import type {FC} from "react";
 import {useEffect, useState} from "react";

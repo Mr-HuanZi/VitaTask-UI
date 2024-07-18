@@ -1,12 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Button, message, Modal, Typography } from 'antd';
-import { PageContainer } from '@ant-design/pro-layout';
-import { useParams } from 'umi';
+import { PageContainer, ProCard, ProFormText } from '@ant-design/pro-components';
+import { useParams } from '@umijs/max';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import {WorkflowInitiate, WorkflowTypeDetailByOnlyName} from '@/services/workflow/api';
 import { history } from '@@/core/history';
-import ProCard from '@ant-design/pro-card';
-import { ProFormText } from '@ant-design/pro-form';
 import BasicException from '@/exceptions/BasicException';
 import {codeOk} from "@/units";
 

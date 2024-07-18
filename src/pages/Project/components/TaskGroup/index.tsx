@@ -1,7 +1,7 @@
 import type {FC} from "react";
 import React, {useRef, useState} from "react";
-import type {ActionType, ProColumns} from "@ant-design/pro-table";
-import {EditableProTable} from "@ant-design/pro-table";
+import type {ActionType, ProColumns} from "@ant-design/pro-components";
+import {EditableProTable} from "@ant-design/pro-components";
 import {Popconfirm} from "antd";
 import {addTaskGroup, deleteTaskGroup, queryTaskGroupList, updateTaskGroup} from "@/services/task/api";
 import {codeOk, errorMessage, isEmpty, successMessage} from "@/units";

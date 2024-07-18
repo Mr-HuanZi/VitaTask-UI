@@ -1,7 +1,7 @@
 import type {FC} from "react";
 import {fetchTaskLogOperators, fetchTaskLogs} from "@/services/task/api";
-import type {ProColumns} from "@ant-design/pro-table";
-import ProTable from "@ant-design/pro-table";
+import type {ProColumns} from "@ant-design/pro-components";
+import {ProTable} from "@ant-design/pro-components";
 import {Avatar} from "antd";
 import {QueryMemberSimpleLists} from "@/services/member/api";
 import {timestampToString} from "@/units";

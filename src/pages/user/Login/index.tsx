@@ -1,8 +1,8 @@
 import {LockOutlined, UserOutlined} from '@ant-design/icons';
 import {Alert, message} from 'antd';
 import React, {useState} from 'react';
-import {LoginForm, ProFormCheckbox, ProFormText} from '@ant-design/pro-form';
-import {history, useModel} from 'umi';
+import {LoginForm, ProFormCheckbox, ProFormText} from '@ant-design/pro-components';
+import { useModel, history } from '@umijs/max';
 import Footer from '@/components/Footer';
 import {login} from '@/services/ant-design-pro/api';
 import styles from './index.less';
@@ -49,10 +49,15 @@ const Login: React.FC = () => {
 
         if (!history) return;
         const { query } = history.location;
-        const { redirect } = query as {
-          redirect: string;
-        };
-        history.push(redirect || '/');
+        if (query) {
+          const { redirect } = query as {
+            redirect: string;
+          };
+          history.push(redirect || '/');
+        } else {
+          history.push('/');
+        }
+
         return;
       } else {
         setLoginStatus(false);

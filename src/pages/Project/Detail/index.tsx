@@ -1,10 +1,10 @@
 import React, {useEffect, useState} from "react";
-import {useParams} from 'umi';
+import {useParams} from '@umijs/max';
 import {DashboardOutlined, ProfileOutlined, TeamOutlined} from "@ant-design/icons";
 import TaskList from "@/pages/Task/components/TaskList";
 import {fetchProjectDetail} from "@/services/project/api";
 import {codeOk} from "@/units";
-import {PageContainer} from "@ant-design/pro-layout";
+import {PageContainer} from "@ant-design/pro-components";
 import type { MenuProps} from "antd";
 import {Menu} from "antd";
 import TaskDetail from "@/pages/Task/components/TaskDetail";

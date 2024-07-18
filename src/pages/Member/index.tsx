@@ -1,11 +1,9 @@
 import React, {useRef} from 'react';
-import {PageContainer} from '@ant-design/pro-layout';
-import type {ActionType, ProColumns} from '@ant-design/pro-table';
-import ProTable from '@ant-design/pro-table';
+import { ProTable , PageContainer } from '@ant-design/pro-components';
+import type {ProFormInstance, ActionType, ProColumns} from '@ant-design/pro-components';
 import {Avatar, Button, Dropdown, message, Popconfirm, Space, Tag} from 'antd';
 import {ChangeMemberSuper, MemberChangeStatus, MemberLists, ResetPassword} from '@/services/member/api';
 import {DownOutlined, StopOutlined} from '@ant-design/icons';
-import type {ProFormInstance} from '@ant-design/pro-form';
 import {codeOk, successMessage} from "@/units";
 import CreateMember from "@/pages/Member/components/CreateMember";
 

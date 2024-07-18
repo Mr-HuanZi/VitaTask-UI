@@ -7,13 +7,10 @@ import {
   WorkflowNodeUpdate
 } from "@/services/workflow/api";
 import {codeOk, getProSelectComponentValue, isEmpty} from "@/units";
-import type { ProFormInstance} from "@ant-design/pro-form";
-import {DrawerForm} from "@ant-design/pro-form";
-import {ProFormSelect, ProFormText} from "@ant-design/pro-form";
+import type { ProFormInstance, ActionType, ProColumns } from "@ant-design/pro-components";
+import { DrawerForm, ProFormSelect, ProFormText, ProTable } from "@ant-design/pro-components";
 import MemberProSelect from "@/components/MemberProSelect";
 import {Button, message, Popconfirm} from "antd";
-import type {ActionType, ProColumns} from "@ant-design/pro-table";
-import ProTable from "@ant-design/pro-table";
 
 interface WorkflowNodeEditPropsI {
   id?: number;

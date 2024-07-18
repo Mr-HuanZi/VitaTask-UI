@@ -1,9 +1,9 @@
 import React from 'react';
 import {List} from 'antd';
-import {useModel} from "@@/plugin-model/useModel";
+import { useModel } from '@umijs/max';
 import NotLoggedIn from "@/pages/user/components/NotLoggedIn";
 import {codeOk, successMessage, timestampToString} from "@/units";
-import {ModalForm, ProFormText} from "@ant-design/pro-form";
+import {ModalForm, ProFormText} from "@ant-design/pro-components";
 import {changePassword, changeSingleInfo} from "@/services/ant-design-pro/api";
 
 type Unpacked<T> = T extends (infer U)[] ? U : T;

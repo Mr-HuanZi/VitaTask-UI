@@ -1,11 +1,9 @@
-import type { Settings as LayoutSettings } from '@ant-design/pro-layout';
-import { PageLoading } from '@ant-design/pro-layout';
-import type { RunTimeLayoutConfig } from 'umi';
-import { history } from 'umi';
+// import { PageLoading } from '@ant-design/pro-layout';
+import type { RunTimeLayoutConfig } from '@umijs/max';
+import { history } from '@umijs/max';
 import RightContent from '@/components/RightContent';
 import Footer from '@/components/Footer';
 import { currentUser as queryCurrentUser } from './services/ant-design-pro/api';
-import defaultSettings from '../config/defaultSettings';
 import type {RequestConfig} from "@@/plugin-request/request";
 import {message, notification} from "antd";
 
@@ -13,15 +11,16 @@ import {message, notification} from "antd";
 const loginPath = '/user/login';
 
 /** 获取用户信息比较慢的时候会展示一个 loading */
-export const initialStateConfig = {
-  loading: <PageLoading />,
-};
+// export const initialStateConfig = {
+//   // loading: <PageLoading />,
+// };
+
 
 /**
- * @see  https://umijs.org/zh-CN/plugins/plugin-initial-state
+ * 全局初始化数据配置，用于 Layout 用户信息和权限初始化
+ * 更多信息见文档：https://umijs.org/docs/api/runtime-config#getinitialstate
  * */
 export async function getInitialState(): Promise<{
-  settings?: Partial<LayoutSettings>;
   currentUser?: API.CurrentUser;
   loading?: boolean;
   fetchUserInfo?: () => Promise<API.CurrentUser | undefined>;
@@ -42,12 +41,10 @@ export async function getInitialState(): Promise<{
     return {
       fetchUserInfo,
       currentUser,
-      settings: defaultSettings,
     };
   }
   return {
     fetchUserInfo,
-    settings: defaultSettings,
   };
 }
 
@@ -80,7 +77,6 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
         </>
       );
     },
-    ...initialState?.settings,
   };
 };
 

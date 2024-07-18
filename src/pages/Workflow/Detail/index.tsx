@@ -1,21 +1,20 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Button, Descriptions, message, Space, Typography } from 'antd';
-import { PageContainer } from '@ant-design/pro-layout';
-import { useParams } from 'umi';
 import {fetchWorkflowDetail, WorkflowExamineApprove, WorkflowNodeLists} from '@/services/workflow/api';
 import { history } from '@@/core/history';
-import { useModel } from '@@/plugin-model/useModel';
+import { useModel, useParams } from '@umijs/max';
 import Logs from '@/pages/Workflow/Detail/Logs';
 import DetailContent from '@/pages/Workflow/Detail/Detail';
 import {
   ModalForm,
+  ProCard,
+  PageContainer,
   ProFormCheckbox,
   ProFormSelect,
   ProFormText,
   ProFormTextArea,
-} from '@ant-design/pro-form';
+} from '@ant-design/pro-components';
 import {codeOk, isEmpty} from '@/units';
-import ProCard from '@ant-design/pro-card';
 import BasicException from '@/exceptions/BasicException';
 import moment from "moment";
 import WorkflowStatusBadge from "@/pages/Workflow/components/WorkflowStatusBadge";

@@ -1,10 +1,7 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {PageContainer} from '@ant-design/pro-layout';
-import type {ActionType, ProColumns} from '@ant-design/pro-table';
-import ProTable from '@ant-design/pro-table';
+import { PageContainer, ModalForm, ProFormText, ProForm, ProTable } from '@ant-design/pro-components';
+import type {ActionType, ProColumns, ProFormInstance} from '@ant-design/pro-components';
 import {Button, Drawer, Dropdown, message, Modal, Space} from 'antd';
-import type {ProFormInstance} from '@ant-design/pro-form';
-import ProForm, {ModalForm, ProFormText} from '@ant-design/pro-form';
 import {
   projectArchive,
   projectCreate,
@@ -35,8 +32,8 @@ const Project: React.FC = () => {
       // 获取负责人
       if (thatProject?.leader?.userInfo) {
         leader = {
-          value: thatProject?.leader?.userInfo.id,
-          label: thatProject?.leader?.userInfo.userNickname,
+          value: thatProject?.leader?.userInfo.id ?? 0,
+          label: thatProject?.leader?.userInfo.userNickname ?? '',
         };
       } else {
         leader = undefined;
@@ -77,7 +74,7 @@ const Project: React.FC = () => {
         }
       })
     } else {
-      message.warn('功能未开放').then();
+      message.warning('功能未开放');
     }
   };
 

@@ -1,10 +1,10 @@
 import { Button, Card, Descriptions, Divider, Result, Space, Steps, Typography } from 'antd';
 import type { FC, SetStateAction} from 'react';
 import {Fragment, useEffect, useState} from 'react';
-import {GridContent} from '@ant-design/pro-layout';
+import {GridContent} from '@ant-design/pro-components';
 
 import styles from './index.less';
-import {history, useParams} from 'umi';
+import {history, useParams} from '@umijs/max';
 import {fetchWorkflowDetail, QueryFootprint} from '@/services/workflow/api';
 import {codeOk} from "@/units";
 import moment from "moment/moment";

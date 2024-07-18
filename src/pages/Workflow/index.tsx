@@ -1,11 +1,10 @@
 import React, {useCallback, useRef, useState} from 'react';
-import { PageContainer } from '@ant-design/pro-layout';
+import { PageContainer, ModalForm } from '@ant-design/pro-components';
+import type { ActionType } from '@ant-design/pro-components';
 import TableList from "@/pages/Workflow/components/TableList";
-import type { ActionType } from '@ant-design/pro-table';
 import WorkflowTypeSelect from "@/pages/Workflow/components/WorkflowTypeSelect";
 import {Button, message} from "antd";
 import {CheckCircleOutlined, ClockCircleOutlined, SendOutlined} from "@ant-design/icons";
-import {ModalForm} from "@ant-design/pro-form";
 import {history} from "umi";
 
 const Workflow: React.FC = () => {

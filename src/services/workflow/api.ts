@@ -1,6 +1,6 @@
 // @ts-ignore
 /* eslint-disable */
-import { request } from 'umi';
+import { request } from '@umijs/max';
 import {ProSchemaValueEnumType} from "@ant-design/pro-utils/lib/typing";
 
 /******************* 工作流类型 *******************/
