@@ -1,10 +1,14 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, {useEffect, useMemo, useRef, useState} from "react";
+import ReactDOM from 'react-dom';
 import {fetchWorkflowNodeSchema, fetchWorkflowNodeTypeAll, saveWorkflowNodeSchema} from "@/services/workflow/api";
 import {codeOk} from "@/units";
 import {Divider, message, Segmented, Space, Spin, Typography} from "antd";
-import type { SegmentedValue } from "antd/lib/segmented";
+import type {SegmentedValue} from "antd/lib/segmented";
 import {useRequest} from "@@/plugin-request/request";
 import SchemaBuilder from '@xrenders/schema-builder';
+
+window.React = React;
+window.ReactDOM = ReactDOM;
 
 interface WorkflowNodeFormPropsI {
   id: number;
@@ -40,6 +44,7 @@ const WorkflowNodeSchema: React.FC<WorkflowNodeFormPropsI> = ({id, updateTime}) 
   }, [id, updateTime, fetchWorkflowNodeTypeAllReq]);
 
   useEffect(() => {
+    console.log('fetchWorkflowNodeSchema useEffect', currentNodeId, genRef.current?.getValue());
     if (currentNodeId) {
       setSpinning(true);
       // 获取第一个节点的 schema
@@ -54,8 +59,26 @@ const WorkflowNodeSchema: React.FC<WorkflowNodeFormPropsI> = ({id, updateTime}) 
   }, [currentNodeId]);
 
   const handleSegmentedChange = (value: SegmentedValue) => {
+    console.log('handleSegmentedChange', value);
     setCurrentNodeId(typeof value === 'string' ? parseInt(value) : value);
   }
+
+  const saveBtnConfig = useMemo(() => ({
+    text: '保存',
+    order: 1,
+    onClick: () => {
+      console.log('saveBtnConfig', currentNodeId, genRef.current?.getValue());
+      if (currentNodeId) {
+        setSpinning(true);
+        saveWorkflowNodeSchema({id: currentNodeId, schema: JSON.stringify(genRef.current?.getValue())}).then((result) => {
+          if (codeOk(result.code)) {
+            message.success(result.message).then();
+          }
+        }).finally(() => setSpinning(false));
+      }
+    },
+  }), [currentNodeId]);
+
 
   return (
     <>
@@ -67,25 +90,15 @@ const WorkflowNodeSchema: React.FC<WorkflowNodeFormPropsI> = ({id, updateTime}) 
       </Space>
       <Divider />
       <Spin tip="Loading..." spinning={spinning}>
-        <SchemaBuilder
-          ref={genRef}
-          importBtn={true}
-          exportBtn={true}
-          saveBtn={{
-            text: '保存',
-            order: 1,
-            onClick: () => {
-              if (currentNodeId) {
-                setSpinning(true);
-                saveWorkflowNodeSchema({id: currentNodeId, schema: JSON.stringify(genRef.current?.getValue())}).then((result) => {
-                  if (codeOk(result.code)) {
-                    message.success(result.message).then();
-                  }
-                }).finally(() => setSpinning(false));
-              }
-            }
-          }}
-        />
+        <div style={{minHeight: '580px', height: '580px'}}>
+          <SchemaBuilder
+            ref={genRef}
+            importBtn={true}
+            exportBtn={true}
+            pubBtn={false}
+            saveBtn={saveBtnConfig}
+          />
+        </div>
       </Spin>
     </>
   );

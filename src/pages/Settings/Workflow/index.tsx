@@ -27,7 +27,12 @@ const Workflow: React.FC = () => {
       />
     },
     { label: '节点管理', key: 'nodes', children: <WorkflowNodeEdit id={workflowTypeId}/> },
-    { label: '表单设计', key: 'form', children: <WorkflowNodeSchema id={workflowTypeId} updateTime={updateTime}/>, forceRender: true },
+    {
+      label: '表单设计',
+      key: 'form',
+      children: <WorkflowNodeSchema id={workflowTypeId} updateTime={updateTime}/>,
+      disabled: true,
+    },
   ];
 
   const onDrawerClose = () => {
