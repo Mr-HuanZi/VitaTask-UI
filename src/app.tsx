@@ -1,11 +1,11 @@
 // import { PageLoading } from '@ant-design/pro-layout';
-import type { RunTimeLayoutConfig } from '@umijs/max';
 import { history } from '@umijs/max';
 import RightContent from '@/components/RightContent';
 import Footer from '@/components/Footer';
 import { currentUser as queryCurrentUser } from './services/ant-design-pro/api';
 import type {RequestConfig} from "@@/plugin-request/request";
 import {message, notification} from "antd";
+import AvatarDropdown from "@/components/RightContent/AvatarDropdown";
 
 // const isDev = process.env.NODE_ENV === 'development';
 const loginPath = '/user/login';
@@ -49,14 +49,12 @@ export async function getInitialState(): Promise<{
 }
 
 // ProLayout 支持的api https://procomponents.ant.design/components/layout
-export const layout: RunTimeLayoutConfig = ({ initialState }) => {
+export const layout = ({ initialState }) => {
   return {
-    rightContentRender: () => <RightContent />,
-    disableContentMargin: false,
-    waterMarkProps: {
-      // content: initialState?.currentUser?.username,
-    },
-    footerRender: () => <Footer />,
+    fixSiderbar: true,
+    headerRender: () => <span>Header</span>,
+    actionsRender: () => [<RightContent key="RightContent"/>],
+    menuFooterRender: () => <Footer />,
     onPageChange: () => {
       const { location } = history;
       // 如果没有登录，重定向到 login
@@ -64,18 +62,17 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
         history.push(loginPath);
       }
     },
-    links: [],
-    menuHeaderRender: undefined,
-    // 自定义 403 页面
-    // unAccessible: <div>unAccessible</div>,
-    // 增加一个 loading 的状态
-    childrenRender: (children) => {
-      // if (initialState?.loading) return <PageLoading />;
-      return (
-        <>
-          {children}
-        </>
-      );
+    avatarProps:{
+      src: initialState?.currentUser?.avatar ?? 'https://gw.alipayobjects.com/zos/antfincdn/efFD%24IOql2/weixintupian_20170331104822.jpg',
+      size: 'large',
+      title: initialState?.currentUser?.userNickname ?? '',
+      render: (props, dom) => {
+        return (
+          <AvatarDropdown>
+            {dom}
+          </AvatarDropdown>
+        );
+      },
     },
   };
 };

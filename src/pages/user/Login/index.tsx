@@ -42,21 +42,24 @@ const Login: React.FC = () => {
       if (result.code === 200 && result?.data?.token) {
         message.success('登录成功！'); // 设置token
         localStorage.setItem('Authorization', result.data.token ?? '');
-        // 将Token传递给WebSocket
-        setToken(result.data.token);
-        await fetchUserInfo();
-        /** 此方法会跳转到 redirect 参数所在的位置 */
+        // 1.5秒后跳转
+        setTimeout(() => {
+          // 将Token传递给WebSocket
+          setToken(result.data.token);
+          fetchUserInfo();
+          /** 此方法会跳转到 redirect 参数所在的位置 */
 
-        if (!history) return;
-        const { query } = history.location;
-        if (query) {
-          const { redirect } = query as {
-            redirect: string;
-          };
-          history.push(redirect || '/');
-        } else {
-          history.push('/');
-        }
+          if (!history) return;
+          const { query } = history.location;
+          if (query) {
+            const { redirect } = query as {
+              redirect: string;
+            };
+            history.push(redirect || '/');
+          } else {
+            history.push('/');
+          }
+        }, 1500);
 
         return;
       } else {

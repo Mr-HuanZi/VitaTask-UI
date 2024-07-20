@@ -11,7 +11,7 @@ import {
   queryProjects
 } from "@/services/project/api";
 import {assembleSingleFormData, codeOk, isEmpty, successMessage} from "@/units";
-import {Link} from "umi";
+import {Link} from "@umijs/max";
 import MemberProSelect from "@/components/MemberProSelect";
 import {DeleteOutlined, DownOutlined, EditOutlined, ExclamationCircleFilled, InboxOutlined} from '@ant-design/icons';
 import ProjectMember from "@/pages/Project/components/ProjectMember";
@@ -225,7 +225,7 @@ const Project: React.FC = () => {
     },
   ];
   return (
-    <PageContainer>
+    <PageContainer ghost={false}>
       <ProTable<ProjectAPI.Project, API.PageParams>
         rowKey="id"
         columns={columns}

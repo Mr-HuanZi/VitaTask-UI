@@ -27,6 +27,7 @@ export default defineConfig({
       icon: 'ProfileOutlined',
       path: '/workflow',
       component: './Workflow',
+      headerRender: true,
       routes: [
         {
           path: '/workflow/statistics',
