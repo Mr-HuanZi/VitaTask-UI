@@ -1,9 +1,9 @@
 // import { PageLoading } from '@ant-design/pro-layout';
 import { history } from '@umijs/max';
+import type {RequestConfig} from "@umijs/max";
 import RightContent from '@/components/RightContent';
 import Footer from '@/components/Footer';
 import { currentUser as queryCurrentUser } from './services/ant-design-pro/api';
-import type {RequestConfig} from "@@/plugin-request/request";
 import {message, notification} from "antd";
 import AvatarDropdown from "@/components/RightContent/AvatarDropdown";
 
@@ -110,19 +110,21 @@ export const request: RequestConfig = {
   // 新增自动添加AccessToken的请求前拦截器
   requestInterceptors: [authHeaderInterceptor],
   responseInterceptors: [responseInterceptors],
-  errorHandler: (error: any) => {
-    const { data, response } = error;
-    if (response.status === 401) {
-      notification.error({
-        description: '您的登录签名已失效，请重新登录',
-        message: '签名失效',
-      });
-    } else {
-      notification.error({
-        description: data?.msg ?? '您的网络发生异常，无法连接服务器',
-        message: '系统异常',
-      });
-    }
-    throw error;
+  errorConfig: {
+    errorHandler: (error: any) => {
+      const { data, response } = error;
+      if (response.status === 401) {
+        notification.error({
+          description: '您的登录签名已失效，请重新登录',
+          message: '签名失效',
+        });
+      } else {
+        notification.error({
+          description: data?.msg ?? '您的网络发生异常，无法连接服务器',
+          message: '系统异常',
+        });
+        throw error;
+      }
+    },
   },
 };
