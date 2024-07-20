@@ -258,7 +258,7 @@ const Project: React.FC = () => {
       <Drawer
         title={`[${thatProject?.name ?? ''}]成员列表`}
         width="50vw"
-        visible={memberListDrawerVisible}
+        open={memberListDrawerVisible}
         onClose={() => setMemberListDrawerVisible(false)}
       >
         <ProjectMember projectId={thatProject?.id ?? 0}/>
