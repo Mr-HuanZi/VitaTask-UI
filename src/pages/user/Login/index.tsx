@@ -42,11 +42,11 @@ const Login: React.FC = () => {
       if (result.code === 200 && result?.data?.token) {
         message.success('登录成功！'); // 设置token
         localStorage.setItem('Authorization', result.data.token ?? '');
-        // 1.5秒后跳转
+        // 将Token传递给WebSocket
+        setToken(result.data.token);
+        await fetchUserInfo();
+        // 0.5秒后跳转
         setTimeout(() => {
-          // 将Token传递给WebSocket
-          setToken(result.data.token);
-          fetchUserInfo();
           /** 此方法会跳转到 redirect 参数所在的位置 */
 
           if (!history) return;
@@ -59,7 +59,7 @@ const Login: React.FC = () => {
           } else {
             history.push('/');
           }
-        }, 1500);
+        }, 500);
 
         return;
       } else {
@@ -92,7 +92,7 @@ const Login: React.FC = () => {
               name="username"
               fieldProps={{
                 size: 'large',
-                prefix: <UserOutlined className={styles.prefixIcon} />,
+                prefix: <UserOutlined />,
               }}
               placeholder={'用户名'}
               rules={[
@@ -106,7 +106,7 @@ const Login: React.FC = () => {
               name="password"
               fieldProps={{
                 size: 'large',
-                prefix: <LockOutlined className={styles.prefixIcon} />,
+                prefix: <LockOutlined />,
               }}
               placeholder={'密码'}
               rules={[
