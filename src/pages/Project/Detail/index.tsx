@@ -11,6 +11,7 @@ import TaskDetail from "@/pages/Task/components/TaskDetail";
 import TaskEdit from "@/pages/Task/components/TaskEdit";
 import ProjectMember from "../components/ProjectMember";
 import ProjectOverview from "@/pages/Project/components/ProjectOverview";
+import {TaskAPI} from "@/services/task/typings";
 
 const items: MenuProps['items'] = [
   {
@@ -59,11 +60,11 @@ const ProjectDetail: React.FC = () => {
       return (
         <TaskList
           projectId={projectData?.id ?? 0}
-          onTitleClick={(entity) => {
+          onTitleClick={(entity: TaskAPI.Task) => {
             setThatTask(entity);
             setDetailVisible(true);
           }}
-          onEditClick={(entity) => {
+          onEditClick={(entity: TaskAPI.Task) => {
             setThatTask(entity);
             setEditDrawerVisible(true);
           }}

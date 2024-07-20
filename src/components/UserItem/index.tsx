@@ -1,7 +1,7 @@
 import {Avatar, Space, Tooltip} from 'antd';
 import React, { useEffect, useState } from 'react';
 
-type UserInfo = {
+export type UserInfo = {
   id: number;
   avatar?: string;
   userLogin: string;
@@ -17,10 +17,10 @@ const UserItem: React.FC<UserItemPropsI> = ({ users }) => {
 
   useEffect(() => {
     if (users) {
-      if (!(users instanceof Array)) {
-        setItems([users]);
-      } else {
+      if (Array.isArray(users)) {
         setItems(users);
+      } else {
+        setItems([users]);
       }
     } else {
       setItems(undefined);

@@ -1,6 +1,8 @@
 // @ts-ignore
 /* eslint-disable */
 
+import {PresetStatusColorType} from "antd/es/_util/colors";
+
 declare namespace TaskAPI {
   type Task = {
     id: number;
@@ -63,7 +65,7 @@ declare namespace TaskAPI {
   type TaskStatus = {
     label: string;
     value: number;
-    status: TaskStatusEnum;
+    status: PresetStatusColorType;
   };
 
   type TaskGroup = {

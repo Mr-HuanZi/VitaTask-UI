@@ -1,13 +1,14 @@
-import ProCard from "@ant-design/pro-components";
-import {Col, Row, Space, Tag, Timeline, Typography} from "antd";
+import {ProCard} from "@ant-design/pro-components";
+import {Col, Flex, Row, Space, Tag, Timeline, Typography} from "antd";
 import type {FC} from "react";
-import {useEffect, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import UserItem from "@/components/UserItem";
 import {codeOk, errorMessage, timestampToString, toArray} from "@/units";
 import {Area, Pie} from "@ant-design/charts";
 import {fetchTaskLogs, fetchTaskStatistics, getTaskDailySituation} from "@/services/task/api";
 import TaskGroup from "@/pages/Project/components/TaskGroup";
 import TaskDetail from "@/pages/Task/components/TaskDetail";
+import {TaskAPI} from "@/services/task/typings";
 
 const {Text} = Typography;
 
@@ -139,6 +140,38 @@ const ProjectOverview: FC<ProjectOverviewProps> = ({projectData}) => {
     }
   }, [projectData]);
 
+  const timelineItems = useMemo(() => {
+    const logs = [];
+    for (const item: TaskAPI.TaskLog of toArray(taskLogs)) {
+      logs.push({
+        children: (
+          <Flex justify="space-between">
+            <Space>
+              <UserItem users={item.operator_info}/>
+              {item.message}
+              <Text ellipsis={{ tooltip: item.task?.title }} style={{width: '255px'}}>
+                任务：
+                <a
+                  onClick={() => {
+                    setTaskId(item.task_id);
+                    setDetailVisible(true);
+                  }}
+                >
+                  {item.task?.title}
+                </a>
+              </Text>
+            </Space>
+            <div>
+              {timestampToString(item.operate_time)}
+            </div>
+          </Flex>
+        ),
+      });
+    }
+
+    return logs;
+  }, [taskLogs]);
+
   return (
     <>
       <Row gutter={[32, 16]}>
@@ -178,7 +211,7 @@ const ProjectOverview: FC<ProjectOverviewProps> = ({projectData}) => {
             </div>
             <div className="m-b-10">
               <Text>创建时间：</Text>
-              <Text>{timestampToString(projectData?.create_time)}</Text>
+              <Text>{timestampToString(projectData?.create_time ?? 0)}</Text>
             </div>
             <div>
               <Text>任务状态：</Text>
@@ -194,34 +227,7 @@ const ProjectOverview: FC<ProjectOverviewProps> = ({projectData}) => {
         </Col>
         <Col span={12}>
           <ProCard title="动态">
-            <Timeline>
-              {toArray(taskLogs).map((item: TaskAPI.TaskLog) => {
-                return (
-                  <Timeline.Item key={item.id}>
-                    <div className={`flex-between`}>
-                      <Space>
-                        <UserItem users={item.operator_info}/>
-                        {item.message}
-                        <Text ellipsis={{ tooltip: item.task?.title }} style={{width: '255px'}}>
-                          任务：
-                          <a
-                            onClick={() => {
-                              setTaskId(item.task_id);
-                              setDetailVisible(true);
-                            }}
-                          >
-                            {item.task?.title}
-                          </a>
-                        </Text>
-                      </Space>
-                      <div>
-                        {timestampToString(item.operate_time)}
-                      </div>
-                    </div>
-                  </Timeline.Item>
-                );
-              })}
-            </Timeline>
+            <Timeline items={timelineItems}/>
           </ProCard>
         </Col>
       </Row>

@@ -3,12 +3,13 @@ import React, {useEffect, useState} from "react";
 import {Badge, Button, Col, Drawer, Dropdown, message, Popconfirm, Row, Space, Tabs, Typography} from "antd";
 import {changeProjectTaskStatus, deleteTask, fetchTask, fetchTaskStatus} from "@/services/task/api";
 import {codeOk, successMessage, timestampToString, toArray} from "@/units";
-import UserItem from "@/components/UserItem";
+import UserItem, {UserInfo} from "@/components/UserItem";
 import moment from 'moment';
 import {DeleteOutlined, DownOutlined, FormOutlined, ProfileTwoTone, StarTwoTone} from "@ant-design/icons";
 import styles from './index.less';
 import TaskLog from "@/pages/Task/components/TaskLog";
 import Dialog from "@/components/Dialog";
+import {TaskAPI} from "@/services/task/typings";
 
 const { Paragraph, Text, Title } = Typography;
 
@@ -49,7 +50,7 @@ const TaskDetail: FC<TaskDetailPropsI> = ({title, visible, onClose, taskId, onEd
       if (codeOk(code) && data) {
         setTaskStatusEnum(data);
         setActionItems(data.map((item: TaskAPI.TaskStatus) => (
-          { label: (<Badge status={item.status} text={item.label} />), key: item.value }
+          { label: (<Badge status={item?.status ?? 'error'} text={item.label} />), key: item.value }
         )));
       }
     });
@@ -71,7 +72,7 @@ const TaskDetail: FC<TaskDetailPropsI> = ({title, visible, onClose, taskId, onEd
           </TaskInfoItem>
           <TaskInfoItem label="协作人">
               <UserItem
-                  users={toArray(data?.collaborator).map((item: TaskAPI.TaskMember) => ({
+                  users={toArray(data?.collaborator).map((item: any): UserInfo => ({
                       id: item.user_id,
                       avatar: item.user_info.avatar,
                       userLogin: item.user_info.userLogin,
@@ -212,7 +213,7 @@ const TaskDetail: FC<TaskDetailPropsI> = ({title, visible, onClose, taskId, onEd
     <Drawer
       title={hideAction ? title : drawerTitleDom}
       width="60%"
-      visible={visible}
+      open={visible}
       onClose={onClose}
       closable={false}
       extra={!hideAction && (

@@ -5,6 +5,7 @@ import {EditableProTable} from "@ant-design/pro-components";
 import {Popconfirm} from "antd";
 import {addTaskGroup, deleteTaskGroup, queryTaskGroupList, updateTaskGroup} from "@/services/task/api";
 import {codeOk, errorMessage, isEmpty, successMessage} from "@/units";
+import {TaskAPI} from "@/services/task/typings";
 
 interface TaskGroupProps {
   project: number;
