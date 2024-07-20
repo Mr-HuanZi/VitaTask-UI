@@ -1,4 +1,4 @@
-import React, {useRef} from "react";
+import React from "react";
 import type {ActionType, ProColumns} from "@ant-design/pro-components";
 import {ProTable} from "@ant-design/pro-components";
 import {Avatar, Popconfirm, Typography} from "antd";
@@ -8,6 +8,7 @@ import TaskCreate from "@/pages/Task/components/TaskCreate";
 import {codeOk, isEmpty, successMessage, timestampToString} from "@/units";
 import {projectSimpleList} from "@/services/project/api";
 import {QueryMemberSimpleLists} from "@/services/member/api";
+import {TaskAPI} from "@/services/task/typings";
 
 interface TaskListPropsI {
   /**
@@ -19,6 +20,7 @@ interface TaskListPropsI {
   create?: boolean; // 允许创建任务
   onTitleClick?: (entity: TaskAPI.Task) => void;
   onEditClick?: (data: TaskAPI.Task) => void;
+  actionRef?: React.MutableRefObject<ActionType | undefined>;
 }
 
 const statusEnum = {
@@ -71,8 +73,6 @@ const {Text} = Typography;
 
 const TaskList: React.FC<TaskListPropsI> = (props) => {
   const {projectId, create = true, onTitleClick, onEditClick} = props;
-
-  const actionRef = useRef<ActionType>();
 
   const columns: ProColumns<TaskAPI.Task>[] = [
     {
@@ -181,7 +181,7 @@ const TaskList: React.FC<TaskListPropsI> = (props) => {
             deleteTask(entity.id).then(({code}) => {
               if (codeOk(code)) {
                 successMessage();
-                actionRef.current?.reload();
+                props?.actionRef?.current?.reload();
               }
             });
           }}
@@ -196,7 +196,7 @@ const TaskList: React.FC<TaskListPropsI> = (props) => {
     <>
       <ProTable<TaskAPI.Task, TaskAPI.TaskListSearchParam>
         columns={columns}
-        actionRef={actionRef}
+        actionRef={props.actionRef}
         revalidateOnFocus={false}
         rowKey={(record) => record.id}
         params={{project: projectId}}
@@ -236,7 +236,7 @@ const TaskList: React.FC<TaskListPropsI> = (props) => {
             width="850px"
             title="新建任务"
             projectId={projectId}
-            ok={() => actionRef.current?.reload()}
+            ok={() => props?.actionRef?.current?.reload()}
           />,
         ]}
         search={{

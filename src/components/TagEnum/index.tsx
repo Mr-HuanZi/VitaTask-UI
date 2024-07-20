@@ -2,8 +2,8 @@ import React, {useEffect, useState} from "react";
 import type { TagProps} from "antd";
 import {Tag} from "antd";
 
-export type TagEnumItem = { color: string; text: string; };
-export type TagEnumItems = Record<string | number, TagEnumItem>
+export type TagEnumItem = { color: string; text: string; status?: string; };
+export type TagEnumItems = Record<string | number, TagEnumItem>;
 
 export interface TagEnumProps extends TagProps {
   items: TagEnumItems;
