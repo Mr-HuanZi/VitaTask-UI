@@ -1,6 +1,6 @@
 import type {FC} from "react";
 import React, {useEffect, useState} from "react";
-import {Badge, Button, Col, Drawer, Dropdown, message, Popconfirm, Row, Space, Tabs, Typography} from "antd";
+import {Badge, Button, Col, Drawer, Dropdown, message, Popconfirm, Row, Space, Tabs, Tag, Typography} from "antd";
 import {changeProjectTaskStatus, deleteTask, fetchTask, fetchTaskStatus} from "@/services/task/api";
 import {codeOk, successMessage, timestampToString, toArray} from "@/units";
 import UserItem, {UserInfo} from "@/components/UserItem";
@@ -172,7 +172,8 @@ const TaskDetail: FC<TaskDetailPropsI> = ({title, visible, onClose, taskId, onEd
         <>
           <div className={styles.header}>
             <Title level={4}>
-              {taskData?.title}
+              { taskData?.id && <Tag color="blue">{taskData?.id}</Tag> }
+              { taskData?.title }
             </Title>
             <Space size="small" className={styles.content}>
               <UserItem users={taskData?.creator?.user_info} />
