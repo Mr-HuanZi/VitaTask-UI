@@ -14,7 +14,6 @@ const WorkflowTypeSelect: React.FC<WorkflowTypeSelectPropsI> = ({value, onChange
   const [typeList, setTypeList] = React.useState<any>([]);
 
   useEffect(() => {
-    console.log("WorkflowTypeSelect");
     WorkflowTypeList({
       page: 1,
       pageSize: 9999,

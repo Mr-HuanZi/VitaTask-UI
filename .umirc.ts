@@ -37,29 +37,31 @@ export default defineConfig({
           /*access: 'WorkflowAdmin',*/
           hideInMenu: true,
         },
-        {
-          path: '/workflow/success/:id',
-          name: '操作成功',
-          icon: 'smile',
-          component: './Workflow/Result/Success',
-          hideInMenu: true,
-        },
-        {
-          path: '/workflow/detail/:id',
-          name: '工作流详情',
-          icon: 'smile',
-          component: './Workflow/Detail',
-          hideInMenu: true,
-        },
-        {
-          path: '/workflow/initiate/:name',
-          name: '发起工作流',
-          icon: 'smile',
-          component: './Workflow/Detail/Initiate',
-          hideInMenu: true,
-        },
       ],
     },
+    /* 工作流动态路由 (无法做上下级，只能放出来，原因未知) */
+    {
+      path: '/workflow/success/:id',
+      name: '操作成功',
+      icon: 'smile',
+      component: './Workflow/Result/Success',
+      hideInMenu: true,
+    },
+    {
+      path: '/workflow/detail/:id',
+      name: '工作流详情',
+      icon: 'smile',
+      component: './Workflow/Detail',
+      hideInMenu: true,
+    },
+    {
+      path: '/workflow/initiate/:name',
+      name: '发起工作流',
+      icon: 'smile',
+      component: './Workflow/Initiate',
+      hideInMenu: true,
+    },
+    /* 项目路由 */
     {
       path: '/project',
       name: '项目',

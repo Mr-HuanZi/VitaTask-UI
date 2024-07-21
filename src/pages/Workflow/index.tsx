@@ -60,7 +60,6 @@ const Workflow: React.FC = () => {
     >
       <WorkflowTypeSelect
         onChange={v => {
-          console.log(v);
           setSelectedValue(v);
         }}
       />

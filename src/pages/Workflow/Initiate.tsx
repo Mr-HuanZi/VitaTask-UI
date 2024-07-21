@@ -1,15 +1,16 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Button, message, Modal, Typography } from 'antd';
-import { PageContainer, ProCard, ProFormText } from '@ant-design/pro-components';
-import { useParams } from '@umijs/max';
-import { ExclamationCircleOutlined } from '@ant-design/icons';
+import React, {useEffect, useRef, useState} from 'react';
+import {Button, Input, message, Modal, Typography} from 'antd';
+import {PageContainer, ProCard} from '@ant-design/pro-components';
+import {useParams} from '@umijs/max';
+import {ExclamationCircleOutlined} from '@ant-design/icons';
 import {WorkflowInitiate, WorkflowTypeDetailByOnlyName} from '@/services/workflow/api';
-import { history } from '@@/core/history';
+import {history} from '@@/core/history';
 import BasicException from '@/exceptions/BasicException';
 import {codeOk} from "@/units";
 
 const { confirm } = Modal;
 const { Title } = Typography;
+const { TextArea } = Input;
 
 const Initiate: React.FC = () => {
   const detailContentActionRef = useRef<WorkflowAPI.DetailContentRef>();
@@ -45,7 +46,7 @@ const Initiate: React.FC = () => {
           try {
             const result = await detailContentActionRef.current?.submit();
             // 工作流子表数据
-            workflowData = result.data ?? null;
+            workflowData = result?.data ?? null;
           } catch (e: any) {
             hide();
             setLoading(false);
@@ -102,13 +103,12 @@ const Initiate: React.FC = () => {
       ]}
     >
       <ProCard title={<Title level={5}>备注</Title>} className={`m-b-15`}>
-        <ProFormText
-          label="说明"
+        <TextArea
+          rows={4}
           placeholder="发起的原因或者需要告知审批人的话"
-          fieldProps={{
-            onChange: (e) => {
-              setRemarks(e.target?.value);
-            },
+          maxLength={6}
+          onChange={(e) => {
+            setRemarks(e.target.value);
           }}
         />
       </ProCard>
