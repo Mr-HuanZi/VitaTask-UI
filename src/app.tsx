@@ -4,8 +4,9 @@ import type {RequestConfig} from "@umijs/max";
 import RightContent from '@/components/RightContent';
 import Footer from '@/components/Footer';
 import { currentUser as queryCurrentUser } from './services/ant-design-pro/api';
-import {message, notification} from "antd";
 import AvatarDropdown from "@/components/RightContent/AvatarDropdown";
+import {codeOk} from "@/units";
+import Notice, { message, notification } from './Notice';
 
 // const isDev = process.env.NODE_ENV === 'development';
 const loginPath = '/user/login';
@@ -87,18 +88,15 @@ const authHeaderInterceptor = (url: string, options: any) => {
   };
 };
 // 响应拦截器
-const responseInterceptors = (response: Response) => {
-  if (response.ok) {
-    const result: Promise<any> = response.clone().json();
-    result.then((res) => {
-      const {code} = res;
-      const msg = res?.message ?? '';
-      if (code !== 200) {
-        message.error(!msg ? "请求错误" : msg).then();
-      }
-    }).catch((reason) => {
-      console.log(reason);
-    });
+const responseInterceptors = (response) => {
+  if (response?.status === 200) {
+    const resultData = response?.data;
+    if (!codeOk(resultData?.code)) {
+      message.open({
+        type: 'error',
+        content: resultData?.message ? resultData?.message : "请求错误",
+      });
+    }
   } else if (response.status === 401) {
     // 如果Token失效跳转到登录页
     history.push(loginPath);
@@ -113,13 +111,15 @@ export const request: RequestConfig = {
   errorConfig: {
     errorHandler: (error: any) => {
       const { data, response } = error;
-      if (response.status === 401) {
-        notification.error({
+      if (response && response?.status === 401) {
+        notification.open({
+          type: 'error',
           description: '您的登录签名已失效，请重新登录',
           message: '签名失效',
         });
       } else {
-        notification.error({
+        notification.open({
+          type: 'error',
           description: data?.msg ?? '您的网络发生异常，无法连接服务器',
           message: '系统异常',
         });
@@ -128,3 +128,12 @@ export const request: RequestConfig = {
     },
   },
 };
+
+export const innerProvider = (container) => {
+  return (
+    <>
+      <Notice />
+      {container}
+    </>
+  );
+}
