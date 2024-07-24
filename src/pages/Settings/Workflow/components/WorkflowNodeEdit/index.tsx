@@ -8,7 +8,7 @@ import {
 } from "@/services/workflow/api";
 import {codeOk, getProSelectComponentValue, isEmpty} from "@/units";
 import type { ProFormInstance, ActionType, ProColumns } from "@ant-design/pro-components";
-import { DrawerForm, ProFormSelect, ProFormText, ProTable } from "@ant-design/pro-components";
+import {DrawerForm, ProFormDigit, ProFormSelect, ProFormText, ProTable} from "@ant-design/pro-components";
 import MemberProSelect from "@/components/MemberProSelect";
 import {Button, message, Popconfirm} from "antd";
 
@@ -19,6 +19,8 @@ interface WorkflowNodeEditPropsI {
 const WorkflowNodeEdit: React.FC<WorkflowNodeEditPropsI> = ({id}) => {
   const formRef = useRef<ProFormInstance>();
   const actionRef = useRef<ActionType>();
+
+  const [messageApi, contextHolder] = message.useMessage();
 
   const [workflowTypeId, setWorkflowTypeId] = useState<number>();
   const [currNodeId, setCurrNodeId] = useState<number>(0);
@@ -32,10 +34,10 @@ const WorkflowNodeEdit: React.FC<WorkflowNodeEditPropsI> = ({id}) => {
     formRef.current?.setFieldsValue(entity);
     // 单独设置指定审核人
     if (entity?.action !== '') {
-      formRef.current?.setFieldValue('action', entity?.action_option,);
+      formRef.current?.setFieldValue('action', entity?.action_option ?? '');
     }
     if (entity?.action_value && !isEmpty(entity.action_value)) {
-      formRef.current?.setFieldValue('action_value', entity.action_value);
+      formRef.current?.setFieldValue('action_value', entity.action_value ?? '');
     } else {
       formRef.current?.setFieldValue('action_value', []);
     }
@@ -46,7 +48,7 @@ const WorkflowNodeEdit: React.FC<WorkflowNodeEditPropsI> = ({id}) => {
    */
   const handleFinish = useCallback(async (formData: any) => {
     if (!workflowTypeId) {
-      message.success('当前步骤不属于任何工作流，请确认');
+      messageApi.success('当前步骤不属于任何工作流，请确认');
       return false;
     }
 
@@ -65,14 +67,14 @@ const WorkflowNodeEdit: React.FC<WorkflowNodeEditPropsI> = ({id}) => {
       formData.id = currNodeId;
       const result = await WorkflowNodeUpdate(formData);
       if (codeOk(result.code)) {
-        message.success(result.message);
+        messageApi.success(result.message);
       }
 
       return codeOk(result.code); // 返回true关闭弹窗
     } else {
       const result = await WorkflowNodeAdd(formData);
       if (codeOk(result.code)) {
-        message.success(result.message);
+        messageApi.success(result.message);
       }
 
       return codeOk(result.code);
@@ -135,7 +137,7 @@ const WorkflowNodeEdit: React.FC<WorkflowNodeEditPropsI> = ({id}) => {
             WorkflowNodeDelete({ id: entity?.id ?? 0, workflow_type_id: entity?.type_id ?? 0 }).then(
               (result) => {
                 if (codeOk(result.code)) {
-                  message.success('操作成功').then();
+                  messageApi.success('操作成功').then();
                   actionRef.current?.reload();
                   formRef.current?.resetFields();
                 }
@@ -151,6 +153,7 @@ const WorkflowNodeEdit: React.FC<WorkflowNodeEditPropsI> = ({id}) => {
 
   return (
     <>
+      {contextHolder}
       <ProTable<WorkflowAPI.WorkflowNode, WorkflowAPI.NodePageParams>
         rowKey="id"
         defaultSize="small"
@@ -202,15 +205,20 @@ const WorkflowNodeEdit: React.FC<WorkflowNodeEditPropsI> = ({id}) => {
         open={drawerVisit}
         submitter={submitterConfig}
       >
-        <ProFormText width="md" name="name" label="节点名称" />
         <ProFormText
+          width="md"
+          name="name"
+          label="节点名称"
+          rules={[{ required: true, message: '请填写节点名称' }]}
+        />
+        <ProFormDigit
           width="md"
           name="node"
           label="节点序号"
           tooltip={'小的排在前面'}
-          fieldProps={{
-            type: 'number',
-          }}
+          min={0}
+          max={999}
+          fieldProps={{ precision: 0 }}
         />
         <ProFormSelect
           width="md"
