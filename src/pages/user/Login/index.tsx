@@ -26,6 +26,8 @@ const Login: React.FC = () => {
   const { initialState, setInitialState } = useModel('@@initialState');
   const {setToken} = useModel('chat');
 
+  const [messageApi, contextHolder] = message.useMessage();
+
   const fetchUserInfo = async () => {
     const userInfo = await initialState?.fetchUserInfo?.();
 
@@ -40,7 +42,7 @@ const Login: React.FC = () => {
       const result = await login({ ...values });
 
       if (result.code === 200 && result?.data?.token) {
-        message.success('登录成功！'); // 设置token
+        messageApi.success('登录成功！'); // 设置token
         localStorage.setItem('Authorization', result.data.token ?? '');
         // 将Token传递给WebSocket
         setToken(result.data.token);
@@ -73,72 +75,75 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className={styles.container}>
-      <div className={styles.content}>
-        <LoginForm
-          logo={<img alt="logo" src="/logo.svg" />}
-          title="Vita Task"
-          subTitle='Vita Task轻量级的任务协同系统'
-          initialValues={{
-            autoLogin: true,
-          }}
-          onFinish={async (values) => {
-            await handleSubmit(values as API.LoginParams);
-          }}
-        >
-          {!loginStatus && <LoginMessage content={'错误的用户名和密码'} />}
-
-          <>
-            <ProFormText
-              name="username"
-              fieldProps={{
-                size: 'large',
-                prefix: <UserOutlined />,
-              }}
-              placeholder={'用户名'}
-              rules={[
-                {
-                  required: true,
-                  message: '用户名是必填项！',
-                },
-              ]}
-            />
-            <ProFormText.Password
-              name="password"
-              fieldProps={{
-                size: 'large',
-                prefix: <LockOutlined />,
-              }}
-              placeholder={'密码'}
-              rules={[
-                {
-                  required: true,
-                  message: '密码是必填项！',
-                },
-              ]}
-            />
-          </>
-
-          <div
-            style={{
-              marginBottom: 24,
+    <>
+      {contextHolder}
+      <div className={styles.container}>
+        <div className={styles.content}>
+          <LoginForm
+            logo={<img alt="logo" src="/logo.svg" />}
+            title="Vita Task"
+            subTitle='Vita Task轻量级的任务协同系统'
+            initialValues={{
+              autoLogin: true,
+            }}
+            onFinish={async (values) => {
+              await handleSubmit(values as API.LoginParams);
             }}
           >
-            <ProFormCheckbox noStyle name="autoLogin" disabled={true}>
-              自动登录
-            </ProFormCheckbox>
-            <a
+            {!loginStatus && <LoginMessage content={'错误的用户名和密码'} />}
+
+            <>
+              <ProFormText
+                name="username"
+                fieldProps={{
+                  size: 'large',
+                  prefix: <UserOutlined />,
+                }}
+                placeholder={'用户名'}
+                rules={[
+                  {
+                    required: true,
+                    message: '用户名是必填项！',
+                  },
+                ]}
+              />
+              <ProFormText.Password
+                name="password"
+                fieldProps={{
+                  size: 'large',
+                  prefix: <LockOutlined />,
+                }}
+                placeholder={'密码'}
+                rules={[
+                  {
+                    required: true,
+                    message: '密码是必填项！',
+                  },
+                ]}
+              />
+            </>
+
+            <div
               style={{
-                float: 'right',
+                marginBottom: 24,
               }}
             >
-              忘记密码 ?
-            </a>
-          </div>
-        </LoginForm>
+              <ProFormCheckbox noStyle name="autoLogin" disabled={true}>
+                自动登录
+              </ProFormCheckbox>
+              <a
+                style={{
+                  float: 'right',
+                }}
+              >
+                忘记密码 ?
+              </a>
+            </div>
+          </LoginForm>
+        </div>
+        <Footer />
       </div>
-      <Footer />
-    </div>
+    </>
   );
 };
 

@@ -18,6 +18,8 @@ const Initiate: React.FC = () => {
   const [workflowType, setWorkflowType] = useState<WorkflowAPI.WorkflowType>();
   const [remarks, setRemarks] = useState<string>('');
 
+  const [messageApi, contextHolder] = message.useMessage();
+
   // 获取路由参数
   const routeParams: any = useParams();
 
@@ -39,7 +41,7 @@ const Initiate: React.FC = () => {
       content: '请确认数据已经填写完毕',
       onOk: async () => {
         setLoading(true);
-        const hide = message.loading('加载中');
+        const hide = messageApi.loading('加载中');
         let workflowData: any = {};
         // 先执行子组件的方法
         if (detailContentActionRef.current?.submit !== undefined) {
@@ -51,14 +53,14 @@ const Initiate: React.FC = () => {
             hide();
             setLoading(false);
             if (e instanceof BasicException) {
-              message.error(e.message);
+              messageApi.error(e.message);
             } else if ('errorFields' in e) {
               // 表单校验失败
               const { errorFields } = e;
-              message.error(errorFields[0]?.errors);
+              messageApi.error(errorFields[0]?.errors);
             } else {
               console.error(e);
-              message.error('提交数据失败');
+              messageApi.error('提交数据失败');
             }
             return;
           }
@@ -70,7 +72,7 @@ const Initiate: React.FC = () => {
         })
           .then((result) => {
             if (codeOk(result.code)) {
-              message.success('操作成功').then();
+              messageApi.success('操作成功');
               history.push(`/workflow/success/${result.data?.id ?? 0}`);
             }
           })
@@ -87,33 +89,36 @@ const Initiate: React.FC = () => {
   };
 
   return (
-    <PageContainer
-      title={`发起[${workflowType?.name ?? ''}]工作流`}
-      extra={[
-        <Button
-          key="1"
-          type="primary"
-          shape="round"
-          size="large"
-          loading={loading}
-          onClick={submitExamineApprove}
-        >
-          提交
-        </Button>,
-      ]}
-    >
-      <ProCard title={<Title level={5}>备注</Title>} className={`m-b-15`}>
-        <TextArea
-          rows={4}
-          placeholder="发起的原因或者需要告知审批人的话"
-          maxLength={6}
-          onChange={(e) => {
-            setRemarks(e.target.value);
-          }}
-        />
-      </ProCard>
-      {selectInitiatePage()}
-    </PageContainer>
+    <>
+      {contextHolder}
+      <PageContainer
+        title={`发起[${workflowType?.name ?? ''}]工作流`}
+        extra={[
+          <Button
+            key="1"
+            type="primary"
+            shape="round"
+            size="large"
+            loading={loading}
+            onClick={submitExamineApprove}
+          >
+            提交
+          </Button>,
+        ]}
+      >
+        <ProCard title={<Title level={5}>备注</Title>} className={`m-b-15`}>
+          <TextArea
+            rows={4}
+            placeholder="发起的原因或者需要告知审批人的话"
+            maxLength={6}
+            onChange={(e) => {
+              setRemarks(e.target.value);
+            }}
+          />
+        </ProCard>
+        {selectInitiatePage()}
+      </PageContainer>
+    </>
   );
 };
 

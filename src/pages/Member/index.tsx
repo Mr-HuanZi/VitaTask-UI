@@ -11,6 +11,8 @@ const Messages: React.FC = () => {
   const actionRef = useRef<ActionType>();
   const createMemberActionRef = useRef<ProFormInstance>();
 
+  const [messageApi, contextHolder] = message.useMessage();
+
   const handleDropdownClick = (key: string, entity: MemberAPI.Member) => {
     if (key === 'enable' || key === 'disable') {
       MemberChangeStatus({
@@ -22,10 +24,10 @@ const Messages: React.FC = () => {
           actionRef.current?.reload();
         }
       });
-    } else if (key == 'setSuper' || key == 'unSuper') {
+    } else if (key === 'setSuper' || key === 'unSuper') {
       ChangeMemberSuper({
         uid: entity.id,
-        super: key == 'setSuper' ? 2 : 1, // 后端表单校验要支持0值有点麻烦，先+1
+        super: key === 'setSuper' ? 2 : 1, // 后端表单校验要支持0值有点麻烦，先+1
       }).then(({code}) => {
         if (codeOk(code)) {
           successMessage();
@@ -33,7 +35,7 @@ const Messages: React.FC = () => {
         }
       });
     } else {
-      message.warn('功能未开放').then();
+      messageApi.warning('功能未开放').then();
     }
   };
 
@@ -158,42 +160,45 @@ const Messages: React.FC = () => {
     },
   ];
   return (
-    <PageContainer>
-      <ProTable<MemberAPI.Member, API.PageParams>
-        columns={columns}
-        actionRef={actionRef}
-        revalidateOnFocus={false}
-        rowKey={(record) => record.id}
-        request={async (params) => {
-          // 官方教程 https://procomponents.ant.design/components/table#request
-          // tips： 如果按照官方的教程来，我也不知道 params 里应该定义什么，索性直接这样就行
-          // 这里需要返回一个 Promise,在返回之前你可以进行数据转化
-          // 如果需要转化参数可以在这里进行修改
-          const result = await MemberLists({
-            page: params.current,
-            pageSize: params.pageSize,
-            ...params,
-          });
-          return {
-            data: result?.data?.items ?? [],
-            // success 请返回 true，
-            // 不然 table 会停止解析数据，即使有数据
-            success: true,
-            // 不传会使用 data 的长度，如果是分页一定要传
-            total: result?.data?.total,
-          };
-        }}
-        toolBarRender={() => [
-          <CreateMember
-            key="create"
-            formRef={createMemberActionRef}
-            trigger={(<Button>创建新成员</Button>)}
-            success={() => actionRef.current?.reload()}
-          />
-        ]}
-      />
+    <>
+      {contextHolder}
+      <PageContainer>
+        <ProTable<MemberAPI.Member, API.PageParams>
+          columns={columns}
+          actionRef={actionRef}
+          revalidateOnFocus={false}
+          rowKey={(record) => record.id}
+          request={async (params) => {
+            // 官方教程 https://procomponents.ant.design/components/table#request
+            // tips： 如果按照官方的教程来，我也不知道 params 里应该定义什么，索性直接这样就行
+            // 这里需要返回一个 Promise,在返回之前你可以进行数据转化
+            // 如果需要转化参数可以在这里进行修改
+            const result = await MemberLists({
+              page: params.current,
+              pageSize: params.pageSize,
+              ...params,
+            });
+            return {
+              data: result?.data?.items ?? [],
+              // success 请返回 true，
+              // 不然 table 会停止解析数据，即使有数据
+              success: true,
+              // 不传会使用 data 的长度，如果是分页一定要传
+              total: result?.data?.total,
+            };
+          }}
+          toolBarRender={() => [
+            <CreateMember
+              key="create"
+              formRef={createMemberActionRef}
+              trigger={(<Button>创建新成员</Button>)}
+              success={() => actionRef.current?.reload()}
+            />
+          ]}
+        />
 
-    </PageContainer>
+      </PageContainer>
+    </>
   );
 };
 

@@ -27,6 +27,8 @@ const TaskDetail: FC<TaskDetailPropsI> = ({title, visible, onClose, taskId, onEd
   const [taskStatusEnum, setTaskStatusEnum] = useState<TaskAPI.TaskStatus[]>([]);
   const [actionItems, setActionItems] = useState<any[]>([]);
 
+  const [messageApi, contextHolder] = message.useMessage();
+
   const fetchTaskData = (id: number) => {
     fetchTask({id: id}).then(r => {
       const {code, data} = r;
@@ -211,28 +213,31 @@ const TaskDetail: FC<TaskDetailPropsI> = ({title, visible, onClose, taskId, onEd
   ];
 
   return (
-    <Drawer
-      title={hideAction ? title : drawerTitleDom}
-      width="60%"
-      open={visible}
-      onClose={onClose}
-      closable={false}
-      extra={!hideAction && (
-        <Space size="large">
-          <StarTwoTone style={{fontSize: "24px"}} onClick={() => message.warning("未开放")} />
-          <FormOutlined style={{fontSize: "20px"}} onClick={() => onEditClick && onEditClick(taskData as TaskAPI.Task)} />
-          <Popconfirm
-            title="确定删除该任务？"
-            placement="bottomRight"
-            onConfirm={onDeleteConfirm}
-          >
-            <DeleteOutlined style={{fontSize: "20px"}} />
-          </Popconfirm>
-        </Space>
-      )}
-    >
-      <Tabs items={items} />
-    </Drawer>
+    <>
+      {contextHolder}
+      <Drawer
+        title={hideAction ? title : drawerTitleDom}
+        width="60%"
+        open={visible}
+        onClose={onClose}
+        closable={false}
+        extra={!hideAction && (
+          <Space size="large">
+            <StarTwoTone style={{fontSize: "24px"}} onClick={() => messageApi.warning("未开放")} />
+            <FormOutlined style={{fontSize: "20px"}} onClick={() => onEditClick && onEditClick(taskData as TaskAPI.Task)} />
+            <Popconfirm
+              title="确定删除该任务？"
+              placement="bottomRight"
+              onConfirm={onDeleteConfirm}
+            >
+              <DeleteOutlined style={{fontSize: "20px"}} />
+            </Popconfirm>
+          </Space>
+        )}
+      >
+        <Tabs items={items} />
+      </Drawer>
+    </>
   );
 }
 

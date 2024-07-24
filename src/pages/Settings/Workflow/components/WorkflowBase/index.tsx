@@ -13,6 +13,8 @@ interface WorkflowBasePropsI {
 const WorkflowBase: React.FC<WorkflowBasePropsI> = ({id, saveSuccess}) => {
   const formRef = useRef<ProFormInstance>();
 
+  const [messageApi, contextHolder] = message.useMessage();
+
   const [, setWorkflowType] = useState<WorkflowAPI.WorkflowType|undefined>(undefined);
   const [workflowTypeId, setWorkflowTypeId] = useState<number>(0);
 
@@ -50,7 +52,7 @@ const WorkflowBase: React.FC<WorkflowBasePropsI> = ({id, saveSuccess}) => {
     }
 
     if (codeOk(result.code)) {
-      message.success(result.message);
+      messageApi.success(result.message);
       if(saveSuccess && result.data)
         saveSuccess(result.data);
     }
@@ -59,41 +61,44 @@ const WorkflowBase: React.FC<WorkflowBasePropsI> = ({id, saveSuccess}) => {
   }, [saveSuccess, workflowTypeId]);
 
   return (
-    <ProForm
-      formRef={formRef}
-      layout="vertical"
-      onFinish={handleFinish}
-    >
-      <ProFormText
-        name="name"
-        label="工作流类型名称"
-        rules={[{ required: true, message: '请填写工作流类型名称' }]}
-      />
-      <ProFormText
-        name="only_name"
-        label="工作流唯一标识"
-        disabled={workflowTypeId > 0}
-        rules={[
-          { required: workflowTypeId <= 0, message: '请填写工作流类型名称' },
-          () => ({
-            // 自定义校验规则，只有workflowTypeId <= 0时才校验
-            validator(_, value) {
-              if (workflowTypeId > 0) {
-                return Promise.resolve();
-              }
-              // 只能包含字母、数字与下划线
-              if (/^[a-zA-Z0-9_]+$/.test(value)) {
-                return Promise.resolve();
-              }
-              return Promise.reject(new Error('格式不正确，只能包含字母、数字与下划线'));
-            },
-          }),
-        ]}
-        tooltip={'只能包含字母、数字，并且一旦提交后就不能修改'}
-      />
-      <ProFormTextArea name="illustrate" label="工作流说明" />
-      <ProFormSwitch name="system" label="系统级" />
-    </ProForm>
+    <>
+      {contextHolder}
+      <ProForm
+        formRef={formRef}
+        layout="vertical"
+        onFinish={handleFinish}
+      >
+        <ProFormText
+          name="name"
+          label="工作流类型名称"
+          rules={[{ required: true, message: '请填写工作流类型名称' }]}
+        />
+        <ProFormText
+          name="only_name"
+          label="工作流唯一标识"
+          disabled={workflowTypeId > 0}
+          rules={[
+            { required: workflowTypeId <= 0, message: '请填写工作流类型名称' },
+            () => ({
+              // 自定义校验规则，只有workflowTypeId <= 0时才校验
+              validator(_, value) {
+                if (workflowTypeId > 0) {
+                  return Promise.resolve();
+                }
+                // 只能包含字母、数字与下划线
+                if (/^[a-zA-Z0-9_]+$/.test(value)) {
+                  return Promise.resolve();
+                }
+                return Promise.reject(new Error('格式不正确，只能包含字母、数字与下划线'));
+              },
+            }),
+          ]}
+          tooltip={'只能包含字母、数字，并且一旦提交后就不能修改'}
+        />
+        <ProFormTextArea name="illustrate" label="工作流说明" />
+        <ProFormSwitch name="system" label="系统级" />
+      </ProForm>
+    </>
   );
 }
 

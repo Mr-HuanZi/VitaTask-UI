@@ -15,6 +15,8 @@ const Workflow: React.FC = () => {
 
   const actionRef = useRef<ActionType>();
 
+  const [messageApi, contextHolder] = message.useMessage();
+
   const handleTabChange = useCallback((key: string) => {
     setTabActiveKey(key);
     switch (key) {
@@ -54,7 +56,7 @@ const Workflow: React.FC = () => {
         if (selectedValue) {
           history.push(`/workflow/initiate/${selectedValue}`);
         } else {
-          message.error('请选择工作流类型');
+          messageApi.error('请选择工作流类型');
         }
       }}
     >
@@ -67,34 +69,37 @@ const Workflow: React.FC = () => {
   )
 
   return (
-    <PageContainer
-      onTabChange={handleTabChange}
-      tabActiveKey={tabActiveKey}
-      header={{title: headerTitle}}
-      extra={[
-        WorkflowTypeSelectToolBar,
-      ]}
-      tabList={[
-        {
-          tab: (<span><ClockCircleOutlined/>我的待办</span>),
-          key: 'todo',
-        },
-        {
-          tab: (<span><SendOutlined/>我发起的</span>),
-          key: 'initiated',
-        },
-        {
-          tab: (<span><CheckCircleOutlined/>我的已办</span>),
-          key: 'completed',
-        },
-      ]}
-    >
-      <TableList
-        requestType={tabActiveKey}
-        ExcludedField={TableExcludedField}
-        actionRef={actionRef}
-      />
-    </PageContainer>
+    <>
+      {contextHolder}
+      <PageContainer
+        onTabChange={handleTabChange}
+        tabActiveKey={tabActiveKey}
+        header={{title: headerTitle}}
+        extra={[
+          WorkflowTypeSelectToolBar,
+        ]}
+        tabList={[
+          {
+            tab: (<span><ClockCircleOutlined/>我的待办</span>),
+            key: 'todo',
+          },
+          {
+            tab: (<span><SendOutlined/>我发起的</span>),
+            key: 'initiated',
+          },
+          {
+            tab: (<span><CheckCircleOutlined/>我的已办</span>),
+            key: 'completed',
+          },
+        ]}
+      >
+        <TableList
+          requestType={tabActiveKey}
+          ExcludedField={TableExcludedField}
+          actionRef={actionRef}
+        />
+      </PageContainer>
+    </>
   );
 };
 

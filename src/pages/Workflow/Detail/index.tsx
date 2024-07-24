@@ -53,6 +53,8 @@ const Detail: React.FC = () => {
   const [nodes, setNodes] = useState<WorkflowAPI.WorkflowNode[]>([]);
   const [remarks, setRemarks] = useState<string>('');
 
+  const [messageApi, contextHolder] = message.useMessage();
+
   useEffect(() => {
     const { id } = routeParams;
     fetchWorkflowDetail(id).then((result) => {
@@ -97,7 +99,7 @@ const Detail: React.FC = () => {
       }
       onFinish={async (formData) => {
         setLoading(true);
-        const hide = message.loading('加载中');
+        const hide = messageApi.loading('加载中');
         // 先执行子组件的方法
         if (detailContentActionRef.current?.overrule !== undefined) {
           const result = await detailContentActionRef.current?.overrule();
@@ -105,7 +107,7 @@ const Detail: React.FC = () => {
           if (!result.success) {
             hide();
             setLoading(false);
-            message.error(isEmpty(result?.message) ? '提交数据失败' : result.message);
+            messageApi.error(isEmpty(result?.message) ? '提交数据失败' : result.message);
             return;
           }
         }
@@ -126,7 +128,7 @@ const Detail: React.FC = () => {
         }).then((result) => {
           hide();
           if (codeOk(result.code)) {
-            message.success('操作成功').then();
+            messageApi.success('操作成功');
             // 返回列表页
             history.push('/workflow/to-do');
           }
@@ -171,7 +173,7 @@ const Detail: React.FC = () => {
         </Button>
       }
       onFinish={async (formData) => {
-        const hide = message.loading('加载中');
+        const hide = messageApi.loading('加载中');
         setLoading(true);
         let workflowData: any = {};
         // 先执行子组件的方法
@@ -184,14 +186,14 @@ const Detail: React.FC = () => {
             hide();
             setLoading(false);
             if (e instanceof BasicException) {
-              message.error(e.message);
+              messageApi.error(e.message);
             } else if ('errorFields' in e) {
               // 表单校验失败
               const {errorFields} = e;
-              message.error(errorFields[0]?.errors);
+              messageApi.error(errorFields[0]?.errors);
             } else {
               console.error(e);
-              message.error('提交数据失败');
+              messageApi.error('提交数据失败');
             }
             return;
           }
@@ -203,7 +205,7 @@ const Detail: React.FC = () => {
           remarks: remarks,
         }).then((result) => {
           if (codeOk(result.code)) {
-            message.success('操作成功');
+            messageApi.success('操作成功');
             // 返回列表页
             history.push(`/workflow/success/${workflowId}`);
           }
@@ -267,36 +269,39 @@ const Detail: React.FC = () => {
   );
 
   return (
-    <PageContainer
-      tabList={tabList}
-      tabActiveKey={pageContext}
-      onTabChange={(key: string) => setPageContext(key)}
-      extra={
-        workflowDetail?.operatorIds && workflowDetail.operatorIds.indexOf(currentUser.id) !== -1
-          ? extra
-          : []
-      }
-      content={content}
-    >
-      {workflowDetail?.workflow?.node === 1 && (
-        <ProCard title={<Title level={5}>备注</Title>} className={`m-b-15`}>
-          <ProFormText
-            label="说明"
-            placeholder="发起的原因或者需要告知审批人的话"
-            fieldProps={{
-              onChange: (e) => {
-                setRemarks(e.target?.value);
-              },
-            }}
-          />
-        </ProCard>
-      )}
-      {pageContext === 'detail' ? (
-        <DetailContent Workflow={workflowDetail} actionRef={detailContentActionRef} />
-      ) : (
-        <Logs workflowId={workflowId} />
-      )}
-    </PageContainer>
+    <>
+      {contextHolder}
+      <PageContainer
+        tabList={tabList}
+        tabActiveKey={pageContext}
+        onTabChange={(key: string) => setPageContext(key)}
+        extra={
+          workflowDetail?.operatorIds && workflowDetail.operatorIds.indexOf(currentUser.id) !== -1
+            ? extra
+            : []
+        }
+        content={content}
+      >
+        {workflowDetail?.workflow?.node === 1 && (
+          <ProCard title={<Title level={5}>备注</Title>} className={`m-b-15`}>
+            <ProFormText
+              label="说明"
+              placeholder="发起的原因或者需要告知审批人的话"
+              fieldProps={{
+                onChange: (e) => {
+                  setRemarks(e.target?.value);
+                },
+              }}
+            />
+          </ProCard>
+        )}
+        {pageContext === 'detail' ? (
+          <DetailContent Workflow={workflowDetail} actionRef={detailContentActionRef} />
+        ) : (
+          <Logs workflowId={workflowId} />
+        )}
+      </PageContainer>
+    </>
   );
 };
 

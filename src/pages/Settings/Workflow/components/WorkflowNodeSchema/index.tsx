@@ -24,6 +24,8 @@ const WorkflowNodeSchema: React.FC<WorkflowNodeFormPropsI> = ({id, updateTime}) 
   const [segmentedOptions, setSegmentedOptions] = useState<any[]>([]);
   const [currentNodeId, setCurrentNodeId] = useState(0);
 
+  const [messageApi, contextHolder] = message.useMessage();
+
   const { run: fetchWorkflowNodeTypeAllReq, loading } = useRequest(fetchWorkflowNodeTypeAll, {manual: true});
 
   useEffect(() => {
@@ -72,7 +74,7 @@ const WorkflowNodeSchema: React.FC<WorkflowNodeFormPropsI> = ({id, updateTime}) 
         setSpinning(true);
         saveWorkflowNodeSchema({id: currentNodeId, schema: JSON.stringify(genRef.current?.getValue())}).then((result) => {
           if (codeOk(result.code)) {
-            message.success(result.message).then();
+            messageApi.success(result.message);
           }
         }).finally(() => setSpinning(false));
       }
@@ -82,6 +84,7 @@ const WorkflowNodeSchema: React.FC<WorkflowNodeFormPropsI> = ({id, updateTime}) 
 
   return (
     <>
+      {contextHolder}
       <Space>
         <Title level={5}>请选择节点：</Title>
         <Spin tip="Loading..." spinning={loading}>

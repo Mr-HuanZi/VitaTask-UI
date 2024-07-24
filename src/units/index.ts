@@ -1,7 +1,7 @@
 import type {MutableRefObject} from 'react';
 import type {ProFormInstance} from '@ant-design/pro-components';
 import {API_OK} from "@/constants";
-import {message} from "antd";
+import {message} from "@/Notice";
 import moment from 'moment';
 
 export type FormFieldSign = {

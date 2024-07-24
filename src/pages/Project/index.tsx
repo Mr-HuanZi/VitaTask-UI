@@ -22,6 +22,8 @@ const Project: React.FC = () => {
   const actionRef = useRef<ActionType>();
   const formRef = useRef<ProFormInstance>();
 
+  const [messageApi, contextHolder] = message.useMessage();
+
   const [editProjectModalVisible, setEditProjectModalVisible] = useState<boolean>(false);
   const [memberListDrawerVisible, setMemberListDrawerVisible] = useState<boolean>(false);
   const [thatProject, setThatProject] = useState<ProjectAPI.Project>();
@@ -74,7 +76,7 @@ const Project: React.FC = () => {
         }
       })
     } else {
-      message.warning('功能未开放');
+      messageApi.warning('功能未开放');
     }
   };
 
@@ -102,6 +104,7 @@ const Project: React.FC = () => {
 
   const projectFormDom = (
     <>
+      {contextHolder}
       <ProFormText
         name="name"
         label="项目名称"
