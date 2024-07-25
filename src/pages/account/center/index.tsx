@@ -1,6 +1,6 @@
 import {HomeOutlined, LinkOutlined, MailOutlined, MobileOutlined} from '@ant-design/icons';
-import {Avatar, Card, Col, Divider, Row, Space, Timeline, Typography} from 'antd';
-import React, {useEffect, useState} from 'react';
+import {Avatar, Card, Col, Divider, Flex, Row, Space, Timeline, Typography} from 'antd';
+import React, {useEffect, useMemo, useState} from 'react';
 import {GridContent} from '@ant-design/pro-layout';
 import type {RouteChildrenProps} from 'react-router';
 import styles from './Center.less';
@@ -12,6 +12,7 @@ import UserItem from "@/components/UserItem";
 import { ProCard } from "@ant-design/pro-components";
 import {fetchTaskLogs} from "@/services/task/api";
 import TaskDetail from "@/pages/Task/components/TaskDetail";
+import {TaskAPI} from "@/services/task/typings";
 
 const {Text} = Typography;
 
@@ -42,7 +43,39 @@ const Center: React.FC<RouteChildrenProps> = () => {
       }).then(({data}) => setTaskLogs(data?.items ?? []) );
     }
 
-  }, [initialState?.currentUser?.id])
+  }, [initialState?.currentUser?.id]);
+
+  const timelineItems = useMemo(() => {
+    const logs = [];
+    for (const item: TaskAPI.TaskLog of toArray(taskLogs)) {
+      logs.push({
+        children: (
+          <Flex justify="space-between">
+            <Space>
+              <UserItem users={item.operator_info}/>
+              {item.message}
+              <Text ellipsis={{ tooltip: item.task?.title }} style={{width: '255px'}}>
+                任务：
+                <a
+                  onClick={() => {
+                    setTaskId(item.task_id);
+                    setDetailVisible(true);
+                  }}
+                >
+                  {item.task?.title}
+                </a>
+              </Text>
+            </Space>
+            <div>
+              {timestampToString(item.operate_time)}
+            </div>
+          </Flex>
+        ),
+      });
+    }
+
+    return logs;
+  }, [taskLogs]);
 
   if (!initialState) {
     return <NotLoggedIn/>;
@@ -117,34 +150,7 @@ const Center: React.FC<RouteChildrenProps> = () => {
         </Col>
         <Col lg={17} md={24}>
           <ProCard title="动态">
-            <Timeline>
-              {toArray(taskLogs).map((item: TaskAPI.TaskLog) => {
-                return (
-                  <Timeline.Item key={item.id}>
-                    <div className={`flex-between`}>
-                      <Space>
-                        <UserItem users={item.operator_info}/>
-                        {item.message}
-                        <Text ellipsis={{tooltip: item.task?.title}} style={{width: '255px'}}>
-                          任务：
-                          <a
-                            onClick={() => {
-                              setTaskId(item.task_id);
-                              setDetailVisible(true);
-                            }}
-                          >
-                            {item.task?.title}
-                          </a>
-                        </Text>
-                      </Space>
-                      <div>
-                        {timestampToString(item.operate_time)}
-                      </div>
-                    </div>
-                  </Timeline.Item>
-                );
-              })}
-            </Timeline>
+            <Timeline items={timelineItems}/>
           </ProCard>
         </Col>
       </Row>
