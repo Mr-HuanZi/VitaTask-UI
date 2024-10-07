@@ -20,7 +20,6 @@
     "@umijs/max": "^4.3.6",
     "@wangeditor/editor": "^5.1.23",
     "@wangeditor/editor-for-react": "^1.0.6",
-    "@xrenders/schema-builder": "^1.0.0-alpha.13",
     "antd": "^5.4.0",
     "lodash": "^4.17.21"
   },

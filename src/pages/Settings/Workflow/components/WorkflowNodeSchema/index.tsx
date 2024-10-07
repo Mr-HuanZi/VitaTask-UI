@@ -1,24 +1,20 @@
-import React, {useEffect, useMemo, useRef, useState} from "react";
-import ReactDOM from 'react-dom';
+import React, {useCallback, useEffect, useRef, useState} from "react";
 import {fetchWorkflowNodeSchema, fetchWorkflowNodeTypeAll, saveWorkflowNodeSchema} from "@/services/workflow/api";
 import {codeOk} from "@/units";
 import {Divider, message, Segmented, Space, Spin, Typography} from "antd";
 import type {SegmentedValue} from "antd/lib/segmented";
 import {useRequest} from "@@/plugin-request/request";
-import SchemaBuilder from '@xrenders/schema-builder';
-
-window.React = React;
-window.ReactDOM = ReactDOM;
+import {ProForm, ProFormInstance, ProFormTextArea} from "@ant-design/pro-components";
 
 interface WorkflowNodeFormPropsI {
   id: number;
   updateTime: number;
 }
 
-const { Title } = Typography;
+const { Title, Link, Text } = Typography;
 
 const WorkflowNodeSchema: React.FC<WorkflowNodeFormPropsI> = ({id, updateTime}) => {
-  const genRef = useRef<any>(); // 不知道组件用的是哪个类型，先用 any
+  const formRef = useRef<ProFormInstance>();
 
   const [spinning, setSpinning] = useState(false);
   const [segmentedOptions, setSegmentedOptions] = useState<any[]>([]);
@@ -46,40 +42,31 @@ const WorkflowNodeSchema: React.FC<WorkflowNodeFormPropsI> = ({id, updateTime}) 
   }, [id, updateTime, fetchWorkflowNodeTypeAllReq]);
 
   useEffect(() => {
-    console.log('fetchWorkflowNodeSchema useEffect', currentNodeId, genRef.current?.getValue());
     if (currentNodeId) {
       setSpinning(true);
       // 获取第一个节点的 schema
       fetchWorkflowNodeSchema(currentNodeId).then((res) => {
         if (codeOk(res.code) && res?.data) {
-          genRef.current?.setValue(JSON.parse(res.data));
+          formRef.current?.setFieldsValue({schema: res.data});
         } else {
-          genRef.current?.setValue('');
+          formRef.current?.setFieldsValue({schema: ''});
         }
       }).finally(() => setSpinning(false));
     }
   }, [currentNodeId]);
 
   const handleSegmentedChange = (value: SegmentedValue) => {
-    console.log('handleSegmentedChange', value);
     setCurrentNodeId(typeof value === 'string' ? parseInt(value) : value);
   }
 
-  const saveBtnConfig = useMemo(() => ({
-    text: '保存',
-    order: 1,
-    onClick: () => {
-      console.log('saveBtnConfig', currentNodeId, genRef.current?.getValue());
-      if (currentNodeId) {
-        setSpinning(true);
-        saveWorkflowNodeSchema({id: currentNodeId, schema: JSON.stringify(genRef.current?.getValue())}).then((result) => {
-          if (codeOk(result.code)) {
-            messageApi.success(result.message);
-          }
-        }).finally(() => setSpinning(false));
+  const handleFinish = useCallback(async (formData: any) => {
+    setSpinning(true);
+    saveWorkflowNodeSchema({id: currentNodeId, schema: formData?.schema}).then((result) => {
+      if (codeOk(result.code)) {
+        messageApi.success(result.message);
       }
-    },
-  }), [currentNodeId]);
+    }).finally(() => setSpinning(false));
+  }, [currentNodeId]);
 
 
   return (
@@ -91,17 +78,26 @@ const WorkflowNodeSchema: React.FC<WorkflowNodeFormPropsI> = ({id, updateTime}) 
           <Segmented block options={segmentedOptions} value={currentNodeId} onChange={handleSegmentedChange} />
         </Spin>
       </Space>
+      <p>
+        <Text>因没有合适的可视化编辑器，请前往</Text>
+        <Link href="https://xrender.fun/schema-builder-online" target="_blank">https://xrender.fun/schema-builder-online</Link>
+        <Text>进行编辑，生成Json Schema后，再复制到下方。</Text>
+      </p>
       <Divider />
       <Spin tip="Loading..." spinning={spinning}>
-        <div style={{minHeight: '580px', height: '580px'}}>
-          <SchemaBuilder
-            ref={genRef}
-            importBtn={true}
-            exportBtn={true}
-            pubBtn={false}
-            saveBtn={saveBtnConfig}
+        <ProForm
+          onFinish={handleFinish}
+          formRef={formRef}
+        >
+          <ProFormTextArea
+            name="schema"
+            label="Json Schema"
+            placeholder="请将Json Schema数据粘贴至此处"
+            fieldProps={{
+              autoSize: { minRows: 20, maxRows: 20 },
+            }}
           />
-        </div>
+        </ProForm>
       </Spin>
     </>
   );

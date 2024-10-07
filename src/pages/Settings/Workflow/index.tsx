@@ -31,7 +31,6 @@ const Workflow: React.FC = () => {
       label: '表单设计',
       key: 'form',
       children: <WorkflowNodeSchema id={workflowTypeId} updateTime={updateTime}/>,
-      disabled: true,
     },
   ];
 
