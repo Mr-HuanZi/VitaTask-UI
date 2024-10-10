@@ -2,7 +2,7 @@ import React, {useCallback, useEffect, useRef, useState} from "react";
 import {WorkflowTypeAdd, WorkflowTypeDetail, WorkflowTypeUpdate} from "@/services/workflow/api";
 import {codeOk} from "@/units";
 import type { ProFormInstance} from "@ant-design/pro-components";
-import { ProForm, ProFormSwitch, ProFormText, ProFormTextArea } from "@ant-design/pro-components";
+import { ProForm, ProFormText, ProFormTextArea } from "@ant-design/pro-components";
 import {message} from "antd";
 
 interface WorkflowBasePropsI {
@@ -29,7 +29,6 @@ const WorkflowBase: React.FC<WorkflowBasePropsI> = ({id, saveSuccess}) => {
           if (entity) {
             formRef.current?.setFieldsValue({
               "name": entity.name,
-              "system": entity?.system === 1 ?? false,
               "illustrate": entity.illustrate,
               "only_name": entity.only_name,
             });
@@ -96,7 +95,6 @@ const WorkflowBase: React.FC<WorkflowBasePropsI> = ({id, saveSuccess}) => {
           tooltip={'只能包含字母、数字，并且一旦提交后就不能修改'}
         />
         <ProFormTextArea name="illustrate" label="工作流说明" />
-        <ProFormSwitch name="system" label="系统级" />
       </ProForm>
     </>
   );
