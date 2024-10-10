@@ -31,11 +31,17 @@ const WorkflowManageDrawer: React.FC<WorkflowManageDrawerPropsI> = ({workflowTyp
         saveSuccess={saveSuccess}
       />
     },
-    { label: '节点管理', key: 'nodes', children: <WorkflowNodeEdit id={workflowTypeId}/> },
+    {
+      label: '节点管理',
+      key: 'nodes',
+      children: <WorkflowNodeEdit id={workflowTypeId}/>,
+      disabled: !workflowTypeId,
+    },
     {
       label: '表单设计',
       key: 'form',
       children: <WorkflowNodeSchema id={workflowTypeId} updateTime={updateTime}/>,
+      disabled: !workflowTypeId,
     },
   ]), [workflowTypeId]);
 
