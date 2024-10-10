@@ -1,66 +1,22 @@
 import React, {useRef, useState} from 'react';
-import type { ActionType, ProColumns, ProFormInstance } from '@ant-design/pro-components';
+import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { ProTable, PageContainer } from '@ant-design/pro-components';
-import { Button, Drawer, Tabs } from 'antd';
+import { Button } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import {WorkflowTypeList,} from '@/services/workflow/api';
-import WorkflowBase from "./components/WorkflowBase";
-import WorkflowNodeEdit from "./components/WorkflowNodeEdit";
-import WorkflowNodeSchema from "./components/WorkflowNodeSchema";
+import WorkflowManageDrawer from "@/pages/Settings/Workflow/components/WorkflowManageDrawer";
 
 const Workflow: React.FC = () => {
   const actionRef = useRef<ActionType>();
 
   const [workflowTypeId, setWorkflowTypeId] = useState<number>(0);
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [updateTime, setUpdateTime] = useState(0);
-
-  const updateFormRef = useRef<ProFormInstance>();
-
-  const items = [
-    {
-      label: '基本设置',
-      key: 'base',
-      children: <WorkflowBase
-        id={workflowTypeId}
-        saveSuccess={(entity) => setWorkflowTypeId(entity.id)}
-      />
-    },
-    { label: '节点管理', key: 'nodes', children: <WorkflowNodeEdit id={workflowTypeId}/> },
-    {
-      label: '表单设计',
-      key: 'form',
-      children: <WorkflowNodeSchema id={workflowTypeId} updateTime={updateTime}/>,
-    },
-  ];
 
   const onDrawerClose = () => {
     setDrawerOpen(false);
     setWorkflowTypeId(0);
     actionRef.current?.reload(); // 关闭抽屉后刷新表格
   }
-
-
-  const manageWorkflowDrawer = (
-    <Drawer
-      title="工作流管理"
-      placement="right"
-      width="85vw"
-      onClose={onDrawerClose}
-      open={drawerOpen}
-      destroyOnClose={true}
-    >
-      <Tabs
-        items={items}
-        tabPosition="left"
-        onTabClick={(key) => {
-          if (key === 'form') {
-            setUpdateTime(Date.now());
-          }
-        }}
-      />
-    </Drawer>
-  );
 
   const handleAddBtnClick = () => {
     setWorkflowTypeId(0);
@@ -106,8 +62,6 @@ const Workflow: React.FC = () => {
           onClick={() => {
             setWorkflowTypeId(entity.id);
             setDrawerOpen(true);
-            // 弹层动画有延迟，如果这里不延迟执行数据不显示
-            setTimeout(() => updateFormRef.current?.setFieldsValue({"name": entity.name, "system": entity?.system === 1 ?? false, "illustrate": entity.illustrate}), 100);
           }}
         >
           管理
@@ -144,7 +98,12 @@ const Workflow: React.FC = () => {
         }}
         toolBarRender={() => [<Button key="add" onClick={handleAddBtnClick}><PlusOutlined />新增类型</Button>]}
       />
-      {manageWorkflowDrawer}
+      <WorkflowManageDrawer
+        drawerOpen={drawerOpen}
+        onDrawerClose={onDrawerClose}
+        workflowTypeId={workflowTypeId}
+        saveSuccess={(entity) => setWorkflowTypeId(entity.id)}
+      />
     </PageContainer>
   );
 };
