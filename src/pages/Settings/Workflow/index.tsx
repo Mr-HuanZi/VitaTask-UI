@@ -1,7 +1,7 @@
 import React, {useRef, useState} from 'react';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { ProTable, PageContainer } from '@ant-design/pro-components';
-import { Button } from 'antd';
+import {Button, Tag} from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import {WorkflowTypeList,} from '@/services/workflow/api';
 import WorkflowManageDrawer from "@/pages/Settings/Workflow/components/WorkflowManageDrawer";
@@ -32,6 +32,14 @@ const Workflow: React.FC = () => {
     {
       title: '工作流名称',
       dataIndex: 'name',
+      render: (_, entity) => {
+        return (
+          <>
+            {entity?.system ? <Tag color="blue">内置</Tag> : ''}
+            {entity?.name ?? '-'}
+          </>
+        );
+      },
     },
     {
       title: '唯一标识',
@@ -42,14 +50,6 @@ const Workflow: React.FC = () => {
       title: '说明',
       dataIndex: 'illustrate',
       hideInSearch: true,
-    },
-    {
-      title: '系统级',
-      dataIndex: 'system',
-      valueEnum: {
-        1: { text: '是', status: 'Success' },
-        0: { text: '否', status: 'Default' },
-      },
     },
     {
       title: '操作',
