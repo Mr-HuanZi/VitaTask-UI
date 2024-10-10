@@ -28,6 +28,7 @@ const Workflow: React.FC = () => {
       title: 'ID',
       dataIndex: 'id',
       hideInSearch: true,
+      width: '80px',
     },
     {
       title: '工作流名称',
@@ -50,6 +51,7 @@ const Workflow: React.FC = () => {
       title: '说明',
       dataIndex: 'illustrate',
       hideInSearch: true,
+      ellipsis: true,
     },
     {
       title: '操作',
