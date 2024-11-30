@@ -75,6 +75,15 @@ export async function WorkflowTypeDetailByOnlyName(onlyName: string, options?: {
   });
 }
 
+/** 工作流类型删除接口 POST /workflow/type/delete */
+export async function WorkflowTypeDelete(id: number, options?: { [key: string]: any }) {
+  return request<API.CResult<WorkflowAPI.WorkflowType>>('/workflow/type/delete', {
+    method: 'POST',
+    data: { id },
+    ...(options || {}),
+  });
+}
+
 
 /******************* 工作流节点 *******************/
 /** 工作流节点列表 POST /workflow/node/list */

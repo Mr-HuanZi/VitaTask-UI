@@ -92,10 +92,16 @@ const responseInterceptors = (response) => {
   if (response?.status === 200) {
     const resultData = response?.data;
     if (!codeOk(resultData?.code)) {
+      /*// 这里抛出Error的话，可以被下面的 errorHandler 捕获并实现全局错误弹窗
+      // 但是同时控制台也会抛出错误，强迫症不爽
+      const error: any = new Error(resultData?.message ?? "请求错误");
+      error.name = 'ApiError';
+      error.info = { errorCode: resultData.code, errorMessage: resultData?.message ?? "请求错误" };
+      throw error; // 抛出自制的错误*/
       message.open({
         type: 'error',
         content: resultData?.message ? resultData?.message : "请求错误",
-      });
+      }).then();
     }
   } else if (response.status === 401) {
     // 如果Token失效跳转到登录页
@@ -118,12 +124,27 @@ export const request: RequestConfig = {
           message: '签名失效',
         });
       } else {
-        notification.open({
-          type: 'error',
-          description: data?.msg ?? '您的网络发生异常，无法连接服务器',
-          message: '系统异常',
-        });
-        throw error;
+        if (error.name === 'ApiError') {
+          if (error?.info) {
+            const {errorMessage} = error?.info;
+            message.open({
+              type: 'error',
+              content: errorMessage,
+            }).then();
+          } else {
+            message.open({
+              type: 'error',
+              content: '接口异常，原因未知',
+            }).then();
+          }
+        } else {
+          notification.open({
+            type: 'error',
+            description: data?.msg ?? '您的网络发生异常，无法连接服务器',
+            message: '系统异常',
+          });
+          throw error;
+        }
       }
     },
   },
