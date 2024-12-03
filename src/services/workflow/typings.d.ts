@@ -44,24 +44,10 @@ declare namespace WorkflowAPI {
     everyone?: number;
     create_time?: string;
     update_time?: string;
-    // todo 以下部分暂未实现
-    condition?: string;
-    condition_fail?: string;
+    condition?: string; // 暂未支持
+    condition_fail?: string; // 暂未支持
     action_option?: API.OptionItem;
-  };
-
-  type WorkflowLog = {
-    id: number;
-    step: number;
-    workflow_id: number;
-    userid: number;
-    nickname: string;
-    explain: string;
-    action: string;
-    action_name: string;
-    created_at?: string;
-    updated_at?: string;
-    step_info?: WorkflowTypeStep;
+    circulation?: WorkflowNode[];
   };
 
   type WorkflowLogVo = {
@@ -88,7 +74,7 @@ declare namespace WorkflowAPI {
   type WorkflowDetail = {
     [x: string]: any[];
     workflow: Workflow;
-    node: WrorkflowNode;
+    node: WorkflowNode;
     operators: WorkflowOperators[];
     workflow_type: WorkflowType;
   };

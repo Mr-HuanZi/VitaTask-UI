@@ -190,6 +190,18 @@ export async function fetchWorkflowNodeSchema(
   });
 }
 
+/** 保存工作流节点表单设计数据 POST /workflow/node/save_circulation */
+export async function saveWorkflowNodeCirculation(
+  body: {type_id: number, circulation: Record<string, number[]>},
+  options?: { [key: string]: any },
+) {
+  return request<API.CResult<WorkflowAPI.WorkflowNode>>('/workflow/node/save_circulation', {
+    method: 'POST',
+    data: body,
+    ...(options || {}),
+  });
+}
+
 
 
 

@@ -3,6 +3,7 @@ import WorkflowBase from "@/pages/Settings/Workflow/components/WorkflowBase";
 import WorkflowNodeEdit from "@/pages/Settings/Workflow/components/WorkflowNodeEdit";
 import WorkflowNodeSchema from "@/pages/Settings/Workflow/components/WorkflowNodeSchema";
 import {Drawer, Tabs} from "antd";
+import WorkflowCirculation from "@/pages/Settings/Workflow/components/WorkflowCirculation";
 
 interface WorkflowManageDrawerPropsI {
   workflowTypeId: number;
@@ -35,6 +36,12 @@ const WorkflowManageDrawer: React.FC<WorkflowManageDrawerPropsI> = ({workflowTyp
       label: '节点管理',
       key: 'nodes',
       children: <WorkflowNodeEdit id={workflowTypeId}/>,
+      disabled: !workflowTypeId,
+    },
+    {
+      label: '流转设置',
+      key: 'circulation',
+      children: <WorkflowCirculation id={workflowTypeId}/>,
       disabled: !workflowTypeId,
     },
     {
