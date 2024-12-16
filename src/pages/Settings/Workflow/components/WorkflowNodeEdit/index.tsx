@@ -8,7 +8,7 @@ import {
 } from "@/services/workflow/api";
 import {codeOk, getProSelectComponentValue, isEmpty} from "@/units";
 import type { ProFormInstance, ActionType, ProColumns } from "@ant-design/pro-components";
-import {DrawerForm, ProFormDigit, ProFormSelect, ProFormText, ProTable} from "@ant-design/pro-components";
+import {DrawerForm, ProFormDigit, ProFormSelect, ProFormText, ProTable, ProFormRadio} from "@ant-design/pro-components";
 import MemberProSelect from "@/components/MemberProSelect";
 import {Button, message, Popconfirm} from "antd";
 
@@ -32,14 +32,23 @@ const WorkflowNodeEdit: React.FC<WorkflowNodeEditPropsI> = ({id}) => {
 
   const setFormData = useCallback((entity: WorkflowAPI.WorkflowNode) => {
     formRef.current?.setFieldsValue(entity);
+    let formFill: any = {};
+
     // 单独设置指定审核人
     if (entity?.action !== '') {
-      formRef.current?.setFieldValue('action', entity?.action_option ?? '');
+      formFill.action = entity?.action_option ?? '';
     }
     if (entity?.action_value && !isEmpty(entity.action_value)) {
-      formRef.current?.setFieldValue('action_value', entity.action_value ?? '');
+      formFill.action_value = entity.action_value ?? '';
     } else {
-      formRef.current?.setFieldValue('action_value', []);
+      formFill.action_value = [];
+    }
+    // 处理结束节点
+    if (entity?.end !== undefined) {
+      formFill.end_node = entity?.end ?? 0;
+    }
+    if (formFill) {
+      formRef.current?.setFieldsValue(formFill);
     }
   }, [formRef]);
 
@@ -52,6 +61,7 @@ const WorkflowNodeEdit: React.FC<WorkflowNodeEditPropsI> = ({id}) => {
       return false;
     }
 
+
     formData.type_id = workflowTypeId;
     formData.node = parseInt(formData.node);
     // 解析select组件的值
@@ -62,6 +72,7 @@ const WorkflowNodeEdit: React.FC<WorkflowNodeEditPropsI> = ({id}) => {
     } else {
       formData.action_value = getProSelectComponentValue(formData.action_value);
     }
+    formData.end = parseInt(formData?.end_node ?? 0);
 
     if (currNodeId > 0) {
       formData.id = currNodeId;
@@ -204,6 +215,9 @@ const WorkflowNodeEdit: React.FC<WorkflowNodeEditPropsI> = ({id}) => {
         }}
         open={drawerVisit}
         submitter={submitterConfig}
+        initialValues={{
+          end_node: 0,
+        }}
       >
         <ProFormText
           width="md"
@@ -215,7 +229,7 @@ const WorkflowNodeEdit: React.FC<WorkflowNodeEditPropsI> = ({id}) => {
           width="md"
           name="node"
           label="节点序号"
-          tooltip={'小的排在前面'}
+          tooltip={'小的排在前面，最前的节点默认作为起始节点'}
           min={0}
           max={999}
           fieldProps={{ precision: 0 }}
@@ -251,6 +265,20 @@ const WorkflowNodeEdit: React.FC<WorkflowNodeEditPropsI> = ({id}) => {
           name="action_value"
           multiple
           showSearch
+        />
+        <ProFormRadio.Group
+          name="end_node"
+          label="结束节点"
+          options={[
+            {
+              label: '是',
+              value: 1,
+            },
+            {
+              label: '否',
+              value: 0,
+            },
+          ]}
         />
       </DrawerForm>
     </>

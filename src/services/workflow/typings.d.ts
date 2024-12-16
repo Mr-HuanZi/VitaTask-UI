@@ -48,6 +48,7 @@ declare namespace WorkflowAPI {
     condition_fail?: string; // 暂未支持
     action_option?: API.OptionItem;
     circulation?: WorkflowNode[];
+    end: number; // 是否为结束节点 1-是
   };
 
   type WorkflowLogVo = {
