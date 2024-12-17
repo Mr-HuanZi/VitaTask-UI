@@ -118,11 +118,23 @@ const WorkflowNodeEdit: React.FC<WorkflowNodeEditPropsI> = ({id}) => {
       title: '操作类型',
       dataIndex: 'action',
       hideInSearch: true,
-      render: (_, entity) => (
-        <>
-          {entity?.action_option?.label ?? '-'}
-        </>
-      ),
+      render: (_, entity) => entity?.action_option?.label ?? '-',
+    },
+    {
+      title: '结束节点',
+      dataIndex: 'end',
+      hideInSearch: true,
+      valueType: 'radio',
+      valueEnum: {
+        0: {
+          text: '否',
+          status: 'Default',
+        },
+        1: {
+          text: '是',
+          status: 'Success',
+        },
+      },
     },
     {
       title: '操作',
