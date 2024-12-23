@@ -15,7 +15,7 @@ const WorkflowCirculation: FC<WorkflowCirculationPropI> = ({id}) => {
   const [workflowTypeId, setWorkflowTypeId] = useState<number>();
   const [allNode, setAllNode] = useState<WorkflowAPI.WorkflowNode[]>([]);
   // 保存复选框的选中状态
-  const [selectedKeys, setSelectedKeys] = useState([]);
+  const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
   // 维护加载中状态
   const [loading, setLoading] = useState(false);
 
@@ -25,10 +25,12 @@ const WorkflowCirculation: FC<WorkflowCirculationPropI> = ({id}) => {
       // 获取所有节点
       fetchWorkflowNodeTypeAll(id).then((entity) => {
         if (codeOk(entity?.code)) {
-          setAllNode(entity?.data ?? []);
+          const allNode = entity?.data ?? [];
+
+          setAllNode(allNode);
           // 遍历节点
           const selectedKeys: string[] = [];
-          for (const node of entity?.data) {
+          for (const node of allNode) {
             if (node?.circulation) {
               for (const circulationNode of node.circulation) {
                 selectedKeys.push(node.id + '-' + circulationNode.id);
@@ -90,7 +92,8 @@ const WorkflowCirculation: FC<WorkflowCirculationPropI> = ({id}) => {
 
   // 获取已选中的NodeID
   const getSelectedNodeIds = useCallback(() => {
-    const nodeIds = {};
+    const nodeIds: Record<string, number[]> = {};
+
     for (const key of selectedKeys) {
       const [fromNodeId, targetNodeId] = key.split('-');
       if (nodeIds?.[fromNodeId]) {
