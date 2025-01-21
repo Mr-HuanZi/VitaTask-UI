@@ -1,7 +1,7 @@
 import React, {useCallback, useEffect, useRef, useState} from "react";
 import {WorkflowTypeAdd, WorkflowTypeDetail, WorkflowTypeUpdate} from "@/services/workflow/api";
 import {codeOk} from "@/units";
-import type { ProFormInstance} from "@ant-design/pro-components";
+import {ProFormInstance, ProFormSelect} from "@ant-design/pro-components";
 import { ProForm, ProFormText, ProFormTextArea } from "@ant-design/pro-components";
 import {message} from "antd";
 
@@ -9,6 +9,11 @@ interface WorkflowBasePropsI {
   id?: number;
   saveSuccess?: (entity: WorkflowAPI.WorkflowType) => void;
 }
+
+const circulationModeMap = {
+  1: {label: '顺序流转', value: 1},
+  2: {label: '自由流转', value: 2},
+};
 
 const WorkflowBase: React.FC<WorkflowBasePropsI> = ({id, saveSuccess}) => {
   const formRef = useRef<ProFormInstance>();
@@ -31,6 +36,7 @@ const WorkflowBase: React.FC<WorkflowBasePropsI> = ({id, saveSuccess}) => {
               "name": entity.name,
               "illustrate": entity.illustrate,
               "only_name": entity.only_name,
+              "circulation_mode": entity.circulation_mode,
             });
           }
         }
@@ -43,6 +49,8 @@ const WorkflowBase: React.FC<WorkflowBasePropsI> = ({id, saveSuccess}) => {
    */
   const handleFinish = useCallback(async (formData: any) => {
     let result;
+    // 类型转换
+    formData.circulation_mode = parseInt(formData?.circulation_mode);
     if (workflowTypeId) {
       formData.id = workflowTypeId;
       result = await WorkflowTypeUpdate(formData);
@@ -66,16 +74,19 @@ const WorkflowBase: React.FC<WorkflowBasePropsI> = ({id, saveSuccess}) => {
         formRef={formRef}
         layout="vertical"
         onFinish={handleFinish}
+        grid={true}
       >
         <ProFormText
           name="name"
           label="工作流类型名称"
           rules={[{ required: true, message: '请填写工作流类型名称' }]}
+          colProps={{xxl: 8, xl: 8, lg: 8, md: 12, sm: 24, xs: 24}}
         />
         <ProFormText
           name="only_name"
           label="工作流唯一标识"
           disabled={workflowTypeId > 0}
+          colProps={{xxl: 8, xl: 8, lg: 8, md: 12, sm: 24, xs: 24}}
           rules={[
             { required: workflowTypeId <= 0, message: '请填写工作流类型名称' },
             () => ({
@@ -94,7 +105,21 @@ const WorkflowBase: React.FC<WorkflowBasePropsI> = ({id, saveSuccess}) => {
           ]}
           tooltip={'只能包含字母、数字，并且一旦提交后就不能修改'}
         />
-        <ProFormTextArea name="illustrate" label="工作流说明" />
+        <ProFormSelect
+          name="circulation_mode"
+          label="流转模式"
+          colProps={{xxl: 8, xl: 8, lg: 8, md: 12, sm: 24, xs: 24}}
+          initialValue={circulationModeMap[1]}
+          valueEnum={{
+            1: '顺序流转',
+            2: '自由流转',
+          }}
+        />
+        <ProFormTextArea
+          name="illustrate"
+          label="工作流说明"
+          colProps={{span: 24}}
+        />
       </ProForm>
     </>
   );

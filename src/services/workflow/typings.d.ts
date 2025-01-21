@@ -30,6 +30,7 @@ declare namespace WorkflowAPI {
     org_id: number;
     only_name: string;
     system: number;
+    circulation_mode: number;
     create_time: string;
     update_time?: string;
   };
