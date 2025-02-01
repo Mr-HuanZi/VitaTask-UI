@@ -79,6 +79,16 @@ const Workflow: React.FC = () => {
       ellipsis: true,
     },
     {
+      title: '流转模式',
+      dataIndex: 'circulation_mode',
+      hideInSearch: true,
+      ellipsis: true,
+      valueEnum: {
+        1: { text: '顺序流转'},
+        2: { text: '自由流转'},
+      },
+    },
+    {
       title: '操作',
       dataIndex: 'option',
       valueType: 'option',

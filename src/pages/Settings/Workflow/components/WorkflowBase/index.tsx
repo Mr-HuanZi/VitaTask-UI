@@ -114,6 +114,7 @@ const WorkflowBase: React.FC<WorkflowBasePropsI> = ({id, saveSuccess}) => {
             1: '顺序流转',
             2: '自由流转',
           }}
+          tooltip={(<>顺序流转：按节点序号从小到大顺序执行；<br/>自由流转：可在【流转设置】自由设定流转顺序</>)}
         />
         <ProFormTextArea
           name="illustrate"
