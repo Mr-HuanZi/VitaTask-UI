@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Descriptions, message, Space, Typography } from 'antd';
 import {fetchWorkflowDetail, WorkflowExamineApprove, WorkflowNodeLists} from '@/services/workflow/api';
 import { history } from '@@/core/history';
@@ -15,9 +15,9 @@ import {
   ProFormTextArea,
 } from '@ant-design/pro-components';
 import {codeOk, isEmpty} from '@/units';
-import BasicException from '@/exceptions/BasicException';
 import moment from "moment";
 import WorkflowStatusBadge from "@/pages/Workflow/components/WorkflowStatusBadge";
+import {useForm} from "form-render";
 
 const { Title, Paragraph } = Typography;
 
@@ -33,7 +33,7 @@ const tabList = [
 ];
 
 const Detail: React.FC = () => {
-  const detailContentActionRef = useRef<WorkflowAPI.DetailContentRef>();
+  const formRef = useForm();
 
   const { initialState } = useModel('@@initialState');
   let currentUser: Partial<API.CurrentUser>;
@@ -100,19 +100,12 @@ const Detail: React.FC = () => {
       onFinish={async (formData) => {
         setLoading(true);
         const hide = messageApi.loading('加载中');
-        // 先执行子组件的方法
-        if (detailContentActionRef.current?.overrule !== undefined) {
-          const result = await detailContentActionRef.current?.overrule();
-          // 判断Ref是否执行成功
-          if (!result.success) {
-            hide();
-            setLoading(false);
-            messageApi.error(isEmpty(result?.message) ? '提交数据失败' : result.message);
-            return;
-          }
-        }
+
+        // 获取表单数据
+        const moreData = formRef.getValues();
+
+        // 退回上一步
         if (formData?.back === true) {
-          // 退回上一步
           for (let i = 0; i < nodes.length; i++) {
             if (nodes[i].node >= (workflowDetail?.workflow?.node ?? 0)) {
               formData.node = nodes[i <= 0 ? 0 : i - 1].node;
@@ -120,17 +113,19 @@ const Detail: React.FC = () => {
             }
           }
         }
+
         WorkflowExamineApprove({
           id: workflowId,
           explain: formData?.explain ?? '',
           node: formData?.node ?? 0,
           action: 'overrule',
+          more_data: !isEmpty(moreData) ? moreData : null,
         }).then((result) => {
           hide();
           if (codeOk(result.code)) {
             messageApi.success('操作成功');
             // 返回列表页
-            history.push('/workflow/to-do');
+            history.push('/workflow');
           }
           setLoading(false);
         }).finally(() => {
@@ -175,32 +170,13 @@ const Detail: React.FC = () => {
       onFinish={async (formData) => {
         const hide = messageApi.loading('加载中');
         setLoading(true);
-        let workflowData: any = {};
-        // 先执行子组件的方法
-        if (detailContentActionRef.current?.submit !== undefined) {
-          try {
-            const result = await detailContentActionRef.current?.submit();
-            // 工作流子表数据
-            workflowData = result.data ?? null;
-          } catch (e: any) {
-            hide();
-            setLoading(false);
-            if (e instanceof BasicException) {
-              messageApi.error(e.message);
-            } else if ('errorFields' in e) {
-              // 表单校验失败
-              const {errorFields} = e;
-              messageApi.error(errorFields[0]?.errors);
-            } else {
-              console.error(e);
-              messageApi.error('提交数据失败');
-            }
-            return;
-          }
-        }
+
+        // 获取表单数据
+        const moreData = formRef.getValues();
+
         WorkflowExamineApprove({
           id: workflowId,
-          data: workflowData,
+          more_data: !isEmpty(moreData) ? moreData : null,
           explain: formData?.explain ?? '',
           remarks: remarks,
         }).then((result) => {
@@ -258,7 +234,7 @@ const Detail: React.FC = () => {
           {workflowDetail?.operators &&
             workflowDetail.operators.map((item: any) => {
               if (item?.nickname) {
-                return <div>{item.nickname ?? ''}</div>;
+                return <div key={item.nickname}>{item.nickname ?? ''}</div>;
               }
               return '';
             })}
@@ -296,7 +272,12 @@ const Detail: React.FC = () => {
           </ProCard>
         )}
         {pageContext === 'detail' ? (
-          <DetailContent Workflow={workflowDetail} actionRef={detailContentActionRef} />
+            workflowDetail?.node && (<DetailContent
+              currNode={workflowDetail.node}
+              formRef={formRef}
+              schema={workflowDetail?.node?.schema ?? ''}
+              values={workflowDetail?.workflow_data}
+            />)
         ) : (
           <Logs workflowId={workflowId} />
         )}

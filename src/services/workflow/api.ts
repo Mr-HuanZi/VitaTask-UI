@@ -1,7 +1,7 @@
 // @ts-ignore
 /* eslint-disable */
 import { request } from '@umijs/max';
-import {ProSchemaValueEnumType} from "@ant-design/pro-utils/lib/typing";
+import {ProSchemaValueEnumMap} from "@ant-design/pro-utils/lib/typing";
 
 /******************* 工作流类型 *******************/
 /** 工作流类型列表(下拉框专用) GET /workflow/type/options */
@@ -62,15 +62,6 @@ export async function WorkflowTypeDetail(id: number, options?: { [key: string]: 
   return request<API.CResult<WorkflowAPI.WorkflowType>>('/workflow/type/detail', {
     method: 'POST',
     data: { id },
-    ...(options || {}),
-  });
-}
-
-/** 工作流类型详情(根据OnlyName)接口 POST /workflow/type/detail/only */
-export async function WorkflowTypeDetailByOnlyName(onlyName: string, options?: { [key: string]: any }) {
-  return request<API.CResult<WorkflowAPI.WorkflowType>>('/workflow/type/detail/only', {
-    method: 'POST',
-    data: { id: onlyName },
     ...(options || {}),
   });
 }
@@ -212,7 +203,7 @@ export async function saveWorkflowNodeCirculation(
 
 /** 工作流状态类型列表(无分页) GET /workflow/status/list */
 export async function WorkflowStatusList(options?: { [key: string]: any }) {
-  return request<API.CResult<Map<number, ProSchemaValueEnumType>>>('/workflow/status/list', {
+  return request<API.CResult<Map<number, ProSchemaValueEnumMap>>>('/workflow/status/list', {
     method: 'GET',
     ...(options || {}),
   });
@@ -226,7 +217,7 @@ export async function WorkflowExamineApprove(
     explain?: string;
     remarks?: string;
     node?: number;
-    data?: any;
+    more_data?: string;
   },
   options?: { [keys: string]: any }
 ) {
@@ -243,6 +234,7 @@ export async function WorkflowInitiate(
     type_id: number;
     remarks?: string;
     data?: any;
+    more_data?: string;
   },
   options?: { [keys: string]: any },
 ) {
@@ -383,3 +375,14 @@ export async function WorkflowExport(params: any, options?: { [key: string]: any
     ...(options || {}),
   });
 }
+
+/** 创建新的工作流接口 POST /workflow/new_workflow */
+export async function NewWorkflow(onlyName: string, options?: { [key: string]: any }) {
+  return request<API.CResult<WorkflowAPI.NewWorkflowVo>>('/workflow/new_workflow', {
+    method: 'POST',
+    data: { id: onlyName },
+    ...(options || {}),
+  });
+}
+
+

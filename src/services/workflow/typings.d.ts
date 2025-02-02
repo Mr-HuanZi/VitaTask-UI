@@ -50,6 +50,7 @@ declare namespace WorkflowAPI {
     action_option?: API.OptionItem;
     circulation?: WorkflowNode[];
     end: number; // 是否为结束节点 1-是
+    schema: string;
   };
 
   type WorkflowLogVo = {
@@ -79,6 +80,7 @@ declare namespace WorkflowAPI {
     node: WorkflowNode;
     operators: WorkflowOperators[];
     workflow_type: WorkflowType;
+    workflow_data: WorkflowDataItemVo[];
   };
 
   type WorkflowDetailRefResponse = {
@@ -115,5 +117,22 @@ declare namespace WorkflowAPI {
   interface DetailContentRef {
     submit: () => Promise<WorkflowDetailRefResponse>;
     overrule: () => Promise<WorkflowDetailRefResponse>;
+  }
+
+  type NewWorkflowVo = {
+    id: number;
+    name: string;
+    only_name: string;
+    system: number;
+    circulation_mode: number;
+    first_node_id: number;
+    first_node_name: string;
+    first_node_schema: string;
+  }
+
+  type WorkflowDataItemVo = {
+    id: number;
+    node_id: number;
+    data: string;
   }
 }

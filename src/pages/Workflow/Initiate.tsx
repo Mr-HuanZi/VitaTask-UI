@@ -1,35 +1,39 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Button, Input, message, Modal, Typography} from 'antd';
 import {PageContainer, ProCard} from '@ant-design/pro-components';
 import {useParams} from '@umijs/max';
 import {ExclamationCircleOutlined} from '@ant-design/icons';
-import {WorkflowInitiate, WorkflowTypeDetailByOnlyName} from '@/services/workflow/api';
+import {NewWorkflow, WorkflowInitiate} from '@/services/workflow/api';
 import {history} from '@@/core/history';
-import BasicException from '@/exceptions/BasicException';
-import {codeOk} from "@/units";
+import {codeOk, isEmpty} from "@/units";
+import FormRender, { useForm } from 'form-render';
 
 const { confirm } = Modal;
 const { Title } = Typography;
 const { TextArea } = Input;
 
 const Initiate: React.FC = () => {
-  const detailContentActionRef = useRef<WorkflowAPI.DetailContentRef>();
+  const formRef = useForm();
 
-  const [workflowType, setWorkflowType] = useState<WorkflowAPI.WorkflowType>();
+  const [workflowName, setWorkflowName] = useState<string>('');
+  const [workflowId, setWorkflowId] = useState<number>(0);
   const [remarks, setRemarks] = useState<string>('');
+  const [loading, setLoading] = useState(false);
+  const [firstNodeSchema, setFirstNodeSchema] = useState<object>();
 
   const [messageApi, contextHolder] = message.useMessage();
 
   // 获取路由参数
   const routeParams: any = useParams();
 
-  const [loading, setLoading] = useState(false);
-
   useEffect(() => {
     const { name } = routeParams;
-    WorkflowTypeDetailByOnlyName(name).then((result) => {
+    NewWorkflow(name).then((result) => {
       if (codeOk(result.code)) {
-        setWorkflowType(result.data);
+        setWorkflowName(result.data?.name ?? '');
+        setWorkflowId(result.data?.id ?? 0);
+        setFirstNodeSchema(JSON.parse(result.data?.first_node_schema ?? ''));
+        console.log(JSON.parse(result.data?.first_node_schema ?? ''));
       }
     });
   }, [routeParams]);
@@ -40,46 +44,28 @@ const Initiate: React.FC = () => {
       icon: <ExclamationCircleOutlined />,
       content: '请确认数据已经填写完毕',
       onOk: async () => {
+        let workflowData: any = {};
+
         setLoading(true);
         const hide = messageApi.loading('加载中');
-        let workflowData: any = {};
-        // 先执行子组件的方法
-        if (detailContentActionRef.current?.submit !== undefined) {
-          try {
-            const result = await detailContentActionRef.current?.submit();
-            // 工作流子表数据
-            workflowData = result?.data ?? null;
-          } catch (e: any) {
-            hide();
-            setLoading(false);
-            if (e instanceof BasicException) {
-              messageApi.error(e.message);
-            } else if ('errorFields' in e) {
-              // 表单校验失败
-              const { errorFields } = e;
-              messageApi.error(errorFields[0]?.errors);
-            } else {
-              console.error(e);
-              messageApi.error('提交数据失败');
-            }
-            return;
-          }
-        }
+
+        // 获取表单数据
+        const moreData = formRef.getValues();
+
         WorkflowInitiate({
-          type_id: workflowType?.id ?? 0,
+          type_id: workflowId,
           remarks,
           data: workflowData,
-        })
-          .then((result) => {
-            if (codeOk(result.code)) {
-              messageApi.success('操作成功');
-              history.push(`/workflow/success/${result.data?.id ?? 0}`);
-            }
-          })
-          .finally(() => {
-            hide();
-            setLoading(false);
-          });
+          more_data: !isEmpty(moreData) ? moreData : null,
+        }).then((result) => {
+          if (codeOk(result.code)) {
+            messageApi.success('操作成功');
+            history.push(`/workflow/success/${result.data?.id ?? 0}`);
+          }
+        }).finally(() => {
+          hide();
+          setLoading(false);
+        });
       },
     });
   };
@@ -92,7 +78,7 @@ const Initiate: React.FC = () => {
     <>
       {contextHolder}
       <PageContainer
-        title={`发起[${workflowType?.name ?? ''}]工作流`}
+        title={`发起[${workflowName}]工作流`}
         extra={[
           <Button
             key="1"
@@ -106,6 +92,15 @@ const Initiate: React.FC = () => {
           </Button>,
         ]}
       >
+        {firstNodeSchema && (
+          <ProCard title={<Title level={5}>附加信息</Title>} className={`m-b-15`}>
+            <FormRender
+              form={formRef}
+              schema={firstNodeSchema}
+              footer={false}
+            />
+          </ProCard>
+        )}
         <ProCard title={<Title level={5}>备注</Title>} className={`m-b-15`}>
           <TextArea
             rows={4}
