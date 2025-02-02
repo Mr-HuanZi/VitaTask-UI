@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useMemo} from 'react';
 import FormRender from "form-render";
 import type {FormInstance} from "form-render/lib/type";
 import {ProCard} from '@ant-design/pro-components';
@@ -14,44 +14,58 @@ interface DetailContentPropsI {
 const { Title } = Typography;
 
 const DetailContent: React.FC<DetailContentPropsI> = ({currNode, schema, formRef, values}) => {
-  const [schemaData, setSchemaData] = React.useState<any|undefined>(schema);
+  const schemaData = useMemo(() => {
+    if (!schema) return undefined;
 
-  useEffect(() => {
-    let obj: any = undefined;
-    if (schema) {
-      // 解析json字符串
-      obj = JSON.parse(schema);
+    try {
+      return JSON.parse(schema);
+    } catch (error) {
+      console.error('Schema解析错误:', error);
+      return undefined;
     }
-
-    setSchemaData(obj);
   }, [schema]);
 
-  useEffect(() => {
-    if (formRef && schemaData) {
-      setTimeout(() => {
-        if (values) {
-          values.forEach((item) => {
-            if (item.node_id === currNode.id) {
-              formRef.setValues(JSON.parse(item.data));
-            }
-          });
-        }
-      }, 100);
+  // 找到当前节点要加载的数据
+  const currentDataItem = useMemo(() => {
+    return values?.find(item => item.node_id === currNode.id);
+  }, [values, currNode.id]);
+
+  // 解析数据
+  const parsedData = useMemo(() => {
+    if (!currentDataItem?.data) return undefined;
+    try {
+      return JSON.parse(currentDataItem.data);
+    } catch (error) {
+      console.error('数据解析错误:', error);
+      return undefined;
     }
-  }, [formRef, values, currNode, schemaData])
+  }, [currentDataItem?.data]);
 
-  if (schemaData)
-    return (
-      <ProCard title={<Title level={5}>附加信息</Title>} className={`m-b-15`}>
-        <FormRender
-          form={formRef}
-          schema={schemaData}
-          footer={false}
-        />
-      </ProCard>
-    );
+  useEffect(() => {
+    if (!formRef || !schemaData) return;
 
-  return <></>;
+    if (parsedData) {
+      formRef.setValues(parsedData);
+    } else {
+      formRef.setValues({});
+    }
+  }, [formRef, schemaData, parsedData]);
+
+  if (!schemaData) return null;
+
+  return (
+    <ProCard title={<Title level={5}>附加信息</Title>} className={`m-b-15`}>
+      <FormRender
+        form={formRef}
+        schema={schemaData}
+        footer={false}
+        onMount={() => { // 双重保障设置值
+          if (parsedData) formRef.setValues(parsedData);
+        }}
+      />
+    </ProCard>
+  );
+
 };
 
 export default DetailContent;
