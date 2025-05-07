@@ -40,5 +40,6 @@
     "prettier-plugin-packagejson": "^2.4.3",
     "ts-node": "^10",
     "typescript": "^5"
-  }
+  },
+  "packageManager": "yarn@4.9.1"
 }
