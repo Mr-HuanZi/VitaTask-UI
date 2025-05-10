@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
 import { Button, Descriptions, message, Space, Typography } from 'antd';
-import {fetchWorkflowDetail, WorkflowExamineApprove, WorkflowNodeLists} from '@/services/workflow/api';
+import {fetchWorkflowDetail, WorkflowExamineApprove} from '@/services/workflow/api';
 import { history } from '@@/core/history';
 import { useModel, useParams } from '@umijs/max';
 import Logs from '@/pages/Workflow/Detail/Logs';
@@ -68,16 +68,7 @@ const Detail: React.FC = () => {
         setWorkflowDetail(data);
         setWorkflowId(data?.workflow?.id ?? 0);
         setRemarks(data?.workflow?.remarks ?? '');
-        // 拉取所有节点
-        WorkflowNodeLists({
-          type_id: data?.workflow?.type_id ?? 0,
-          page: 1,
-          pageSize: 9999,
-        }).then((res) => {
-          if (codeOk(res.code)) {
-            setNodes(res?.data?.items ?? []);
-          }
-        });
+        setNodes(data?.all_node ?? []);
       }
     });
   }, [routeParams]);
@@ -103,9 +94,9 @@ const Detail: React.FC = () => {
 
         // 退回上一步
         if (formData?.back === true) {
-          for (let i = 0; i < nodes.length; i++) {
-            if (nodes[i].node >= (workflowDetail?.workflow?.node ?? 0)) {
-              formData.node = nodes[i <= 0 ? 0 : i - 1].node;
+          for (const nodeItem of nodes) {
+            if (nodeItem.node < (workflowDetail?.workflow?.node ?? 0)) {
+              formData.node = nodeItem.node;
               break;
             }
           }
@@ -275,8 +266,8 @@ const Detail: React.FC = () => {
         )}
         {
           (pageContext === 'detail' && workflowDetail?.node) && (
-            workflowDetail?.all_node.map((currNode: WorkflowAPI.WorkflowNode) => (
-              currNode.schema &&
+            nodes.map((currNode: WorkflowAPI.WorkflowNode) => (
+              (currNode.schema && currNode.node <= workflowDetail.workflow.node) &&
               <DetailForm
                 key={currNode.node}
                 currNode={currNode}
