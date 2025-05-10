@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import { Button, Descriptions, message, Space, Typography } from 'antd';
 import {fetchWorkflowDetail, WorkflowExamineApprove, WorkflowNodeLists} from '@/services/workflow/api';
 import { history } from '@@/core/history';
 import { useModel, useParams } from '@umijs/max';
 import Logs from '@/pages/Workflow/Detail/Logs';
-import DetailContent from '@/pages/Workflow/Detail/Detail';
 import {
   ModalForm,
   ProCard,
@@ -17,7 +16,7 @@ import {
 import {codeOk, isEmpty} from '@/units';
 import moment from "moment";
 import WorkflowStatusBadge from "@/pages/Workflow/components/WorkflowStatusBadge";
-import {useForm} from "form-render";
+import DetailForm, {DetailFormRefI} from "@/pages/Workflow/Detail/DetailForm";
 
 const { Title, Paragraph } = Typography;
 
@@ -33,7 +32,8 @@ const tabList = [
 ];
 
 const Detail: React.FC = () => {
-  const formRef = useForm();
+  // 保存所有子组件 ref 的映射表
+  const childRefs = useRef<Record<string, DetailFormRefI | null>>({});
 
   const { initialState } = useModel('@@initialState');
   let currentUser: Partial<API.CurrentUser>;
@@ -101,9 +101,6 @@ const Detail: React.FC = () => {
         setLoading(true);
         const hide = messageApi.loading('加载中');
 
-        // 获取表单数据
-        const moreData = formRef.getValues();
-
         // 退回上一步
         if (formData?.back === true) {
           for (let i = 0; i < nodes.length; i++) {
@@ -119,7 +116,6 @@ const Detail: React.FC = () => {
           explain: formData?.explain ?? '',
           node: formData?.node ?? 0,
           action: 'overrule',
-          more_data: !isEmpty(moreData) ? moreData : null,
         }).then((result) => {
           hide();
           if (codeOk(result.code)) {
@@ -171,8 +167,14 @@ const Detail: React.FC = () => {
         const hide = messageApi.loading('加载中');
         setLoading(true);
 
-        // 获取表单数据
-        const moreData = formRef.getValues();
+        /* 获取子组件表单数据 Start */
+        let moreData = null;
+        // 只获取当前步骤的Form数据
+        if (workflowDetail?.node) {
+          const nodeRef =  childRefs.current[workflowDetail.node.node] ?? null;
+          moreData = nodeRef?.getValues() ?? null;
+        }
+        /* 获取子组件表单数据 End */
 
         WorkflowExamineApprove({
           id: workflowId,
@@ -271,16 +273,23 @@ const Detail: React.FC = () => {
             />
           </ProCard>
         )}
-        {pageContext === 'detail' ? (
-            workflowDetail?.node && (<DetailContent
-              currNode={workflowDetail.node}
-              formRef={formRef}
-              schema={workflowDetail?.node?.schema ?? ''}
-              values={workflowDetail?.workflow_data}
-            />)
-        ) : (
-          <Logs workflowId={workflowId} />
-        )}
+        {
+          (pageContext === 'detail' && workflowDetail?.node) && (
+            workflowDetail?.all_node.map((currNode: WorkflowAPI.WorkflowNode) => (
+              currNode.schema &&
+              <DetailForm
+                key={currNode.node}
+                currNode={currNode}
+                schema={currNode.schema}
+                values={workflowDetail?.workflow_data}
+                readonly={currNode.node !== workflowDetail?.workflow?.node}
+                title={currNode.node !== workflowDetail?.workflow?.node ? `步骤[${currNode.name}]提交数据` : undefined}
+                ref={(el) => (childRefs.current[currNode.node] = el)}
+              />
+            ))
+          )
+        }
+        {pageContext === 'logs' && <Logs workflowId={workflowId} />}
       </PageContainer>
     </>
   );

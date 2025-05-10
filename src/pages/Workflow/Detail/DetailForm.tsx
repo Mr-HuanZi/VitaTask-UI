@@ -1,19 +1,32 @@
-import React, {useEffect, useMemo} from 'react';
-import FormRender from "form-render";
-import type {FormInstance} from "form-render/lib/type";
-import {ProCard} from '@ant-design/pro-components';
+import React, {forwardRef, useEffect, useImperativeHandle, useMemo} from 'react';
+import FormRender, {useForm} from "form-render";
+import {ProCard} from "@ant-design/pro-components";
 import {Typography} from "antd";
 
-interface DetailContentPropsI {
+export interface DetailFormPropsI {
   currNode: WorkflowAPI.WorkflowNode;
-  formRef: FormInstance;
   schema?: string;
   values?: WorkflowAPI.WorkflowDataItemVo[];
+  readonly?: boolean;
+  title?: string;
+}
+
+export interface DetailFormRefI {
+  getValues: () => any; // 暴露给父组件的方法
 }
 
 const { Title } = Typography;
 
-const DetailContent: React.FC<DetailContentPropsI> = ({currNode, schema, formRef, values}) => {
+const DetailForm = forwardRef<DetailFormRefI, DetailFormPropsI>((props, ref) => {
+  const formRef = useForm();
+  const { currNode, schema, values, readonly, title } = props;
+
+  useImperativeHandle(ref, () => ({
+    getValues: () => {
+      return formRef.getValues();
+    },
+  }));
+
   const schemaData = useMemo(() => {
     if (!schema) return undefined;
 
@@ -44,6 +57,8 @@ const DetailContent: React.FC<DetailContentPropsI> = ({currNode, schema, formRef
   useEffect(() => {
     if (!formRef || !schemaData) return;
 
+    console.log('schemaData', schemaData);
+
     if (parsedData) {
       formRef.setValues(parsedData);
     } else {
@@ -54,18 +69,18 @@ const DetailContent: React.FC<DetailContentPropsI> = ({currNode, schema, formRef
   if (!schemaData) return null;
 
   return (
-    <ProCard title={<Title level={5}>附加信息</Title>} className={`m-b-15`}>
+    <ProCard title={<Title level={5}>{title ?? '审批数据'}</Title>} className={`m-b-15`}>
       <FormRender
         form={formRef}
         schema={schemaData}
         footer={false}
+        readOnly={readonly}
         onMount={() => { // 双重保障设置值
           if (parsedData) formRef.setValues(parsedData);
         }}
       />
     </ProCard>
-  );
+  )
+});
 
-};
-
-export default DetailContent;
+export default DetailForm;

@@ -81,6 +81,7 @@ declare namespace WorkflowAPI {
     operators: WorkflowOperators[];
     workflow_type: WorkflowType;
     workflow_data: WorkflowDataItemVo[];
+    all_node: WorkflowNode[];
   };
 
   type WorkflowDetailRefResponse = {
