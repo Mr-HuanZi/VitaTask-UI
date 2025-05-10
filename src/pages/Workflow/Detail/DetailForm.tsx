@@ -57,8 +57,6 @@ const DetailForm = forwardRef<DetailFormRefI, DetailFormPropsI>((props, ref) => 
   useEffect(() => {
     if (!formRef || !schemaData) return;
 
-    console.log('schemaData', schemaData);
-
     if (parsedData) {
       formRef.setValues(parsedData);
     } else {
