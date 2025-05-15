@@ -134,6 +134,8 @@ declare namespace WorkflowAPI {
   type WorkflowDataItemVo = {
     id: number;
     node_id: number;
+    node: number; // 节点序号
     data: string;
+    schema: string;
   }
 }

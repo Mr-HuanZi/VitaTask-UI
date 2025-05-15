@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useMemo, useRef, useState} from 'react';
 import { Button, Descriptions, message, Space, Typography } from 'antd';
 import {fetchWorkflowDetail, WorkflowExamineApprove} from '@/services/workflow/api';
 import { history } from '@@/core/history';
@@ -72,6 +72,36 @@ const Detail: React.FC = () => {
       }
     });
   }, [routeParams]);
+
+  const currFormElement = useMemo(() => {
+    if (!workflowDetail?.node?.schema)
+      return;
+
+    // 找出当前节点曾经提交过的数据，如果有的话
+    let currData = '';
+    if (workflowDetail?.workflow_data) {
+      for (const workflowDatum of workflowDetail.workflow_data) {
+        if (workflowDatum.node_id === workflowDetail?.node.id) {
+          currData = workflowDatum.data;
+          break;
+        }
+      }
+    }
+
+    return (
+      <DetailForm
+        workflowData={{
+          id: 0,
+          node_id: workflowDetail?.node.id,
+          node: workflowDetail?.node.node,
+          data: currData,
+          schema: workflowDetail?.node.schema,
+        }}
+        readonly={false}
+        ref={(el) => (childRefs.current[workflowDetail?.node.node] = el)}
+      />
+    );
+  }, [workflowDetail?.node]);
 
   const extra = [
     <ModalForm
@@ -265,20 +295,20 @@ const Detail: React.FC = () => {
           </ProCard>
         )}
         {
-          (pageContext === 'detail' && workflowDetail?.node) && (
-            nodes.map((currNode: WorkflowAPI.WorkflowNode) => (
-              (currNode.schema && currNode.node <= workflowDetail.workflow.node) &&
+          (pageContext === 'detail' && workflowDetail?.workflow_data) && (
+            workflowDetail.workflow_data.map((currData: WorkflowAPI.WorkflowDataItemVo) => (
+              (currData.schema && currData.node <= workflowDetail.workflow.node) &&
               <DetailForm
-                key={currNode.node}
-                currNode={currNode}
-                schema={currNode.schema}
-                values={workflowDetail?.workflow_data}
-                readonly={currNode.node !== workflowDetail?.workflow?.node}
-                title={currNode.node !== workflowDetail?.workflow?.node ? `步骤[${currNode.name}]提交数据` : undefined}
-                ref={(el) => (childRefs.current[currNode.node] = el)}
+                key={currData.node}
+                workflowData={currData}
+                readonly={currData.node !== workflowDetail?.workflow?.node}
+                ref={(el) => (childRefs.current[currData.node] = el)}
               />
             ))
           )
+        }
+        {
+          (pageContext === 'detail' && workflowDetail?.node.schema) && (currFormElement)
         }
         {pageContext === 'logs' && <Logs workflowId={workflowId} />}
       </PageContainer>
