@@ -103,6 +103,33 @@ const Detail: React.FC = () => {
     );
   }, [workflowDetail?.node]);
 
+  const detailFormList = useMemo(() => {
+    if (!workflowDetail?.workflow_data)
+      return;
+
+    // 如果没有当前节点信息，表示当前工作流已完成，列出所有节点数据
+    if (!workflowDetail?.workflow?.node_info) {
+      return workflowDetail.workflow_data.map((voItem: WorkflowAPI.WorkflowDataItemVo) => (
+        <DetailForm
+          key={voItem.node}
+          workflowData={voItem}
+          readonly={true}
+          ref={(el) => (childRefs.current[voItem.node] = el)}
+        />
+      ));
+    }
+
+    return workflowDetail.workflow_data.map((voItem: WorkflowAPI.WorkflowDataItemVo) => (
+      (voItem.schema && voItem.node <= workflowDetail?.workflow?.node) &&
+      <DetailForm
+        key={voItem.node}
+        workflowData={voItem}
+        readonly={voItem.node !== workflowDetail?.workflow?.node}
+        ref={(el) => (childRefs.current[voItem.node] = el)}
+      />
+    ));
+  }, [workflowDetail?.workflow_data, workflowDetail?.workflow?.node_info]);
+
   const extra = [
     <ModalForm
       key="overrule"
@@ -294,22 +321,8 @@ const Detail: React.FC = () => {
             />
           </ProCard>
         )}
-        {
-          (pageContext === 'detail' && workflowDetail?.workflow_data) && (
-            workflowDetail.workflow_data.map((currData: WorkflowAPI.WorkflowDataItemVo) => (
-              (currData.schema && currData.node <= workflowDetail.workflow.node) &&
-              <DetailForm
-                key={currData.node}
-                workflowData={currData}
-                readonly={currData.node !== workflowDetail?.workflow?.node}
-                ref={(el) => (childRefs.current[currData.node] = el)}
-              />
-            ))
-          )
-        }
-        {
-          (pageContext === 'detail' && workflowDetail?.node.schema) && (currFormElement)
-        }
+        {pageContext === 'detail' && detailFormList}
+        {(pageContext === 'detail' && workflowDetail?.node?.schema) && currFormElement}
         {pageContext === 'logs' && <Logs workflowId={workflowId} />}
       </PageContainer>
     </>
