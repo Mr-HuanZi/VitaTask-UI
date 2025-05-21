@@ -1,7 +1,7 @@
-import React, {useEffect} from "react";
+import React from "react";
 import {WorkflowTypeList} from "@/services/workflow/api";
-import {codeOk} from "@/units";
 import {CheckCard} from '@ant-design/pro-components';
+import {useRequest} from "ahooks";
 
 interface WorkflowTypeSelectPropsI {
   /** 选中的值 */
@@ -11,18 +11,9 @@ interface WorkflowTypeSelectPropsI {
 }
 
 const WorkflowTypeSelect: React.FC<WorkflowTypeSelectPropsI> = ({value, onChange}) => {
-  const [typeList, setTypeList] = React.useState<any>([]);
-
-  useEffect(() => {
-    WorkflowTypeList({
-      page: 1,
-      pageSize: 9999,
-    }).then((result) => {
-      if (codeOk(result.code)) {
-        setTypeList(result.data?.items ?? []);
-      }
-    })
-  }, []);
+  const { data, loading } = useRequest(WorkflowTypeList, {
+    defaultParams:[{page: 1,pageSize: 9999}]
+  });
 
   return (
     <CheckCard.Group
@@ -32,12 +23,13 @@ const WorkflowTypeSelect: React.FC<WorkflowTypeSelectPropsI> = ({value, onChange
         }
       }}
       defaultValue={value}
+      loading={loading}
     >
-      {typeList && typeList.map((item: any) => (
+      {data?.data?.items && data.data.items.map((item: any) => (
         <CheckCard
           key={item.only_name}
           title={item.name}
-          description={item?.illustrate ?? '-'}
+          description={item?.illustrate || '-'}
           value={item.only_name}
         />
       ))}
