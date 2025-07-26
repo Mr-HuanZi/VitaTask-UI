@@ -1,7 +1,7 @@
 import React, {useRef, useState} from 'react';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { ProTable, PageContainer } from '@ant-design/pro-components';
-import {Button, Popconfirm, Tag} from 'antd';
+import {Button, Input, Popconfirm, Tag} from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import {WorkflowTypeDelete, WorkflowTypeList} from '@/services/workflow/api';
 import WorkflowManageDrawer from "@/pages/Settings/Workflow/components/WorkflowManageDrawer";
@@ -51,7 +51,7 @@ const Workflow: React.FC = () => {
     },
     {
       title: '工作流名称',
-      dataIndex: 'name',
+      dataIndex: 'keyword',
       render: (_, entity) => {
         return (
           <>
@@ -59,6 +59,26 @@ const Workflow: React.FC = () => {
             {entity?.name ?? '-'}
           </>
         );
+      },
+      renderFormItem: (
+        _,
+        { type, defaultRender },
+        form,
+      ) => {
+        if (type === 'form') {
+          return null;
+        }
+        const status = form.getFieldValue('state');
+        if (status !== 'open') {
+          return (
+            // value 和 onchange 会通过 form 自动注入。
+            <Input
+              name="keyword"
+              placeholder="请输入工作流标题或唯一标识"
+            />
+          );
+        }
+        return defaultRender(_);
       },
     },
     {
