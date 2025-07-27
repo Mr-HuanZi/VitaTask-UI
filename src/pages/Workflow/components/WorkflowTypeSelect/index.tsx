@@ -1,5 +1,5 @@
 import React, {useMemo} from "react";
-import {WorkflowTypeList} from "@/services/workflow/api";
+import { WorkflowTypeOrdinaryList } from "@/services/workflow/api";
 import {CheckCard} from '@ant-design/pro-components';
 import {useRequest} from "ahooks";
 import {Tooltip} from "antd";
@@ -42,7 +42,7 @@ const CardTooltip: React.FC<{text?: string}> = ({text}) => {
 }
 
 const WorkflowTypeSelect: React.FC<WorkflowTypeSelectPropsI> = ({value, onChange}) => {
-  const { data, loading } = useRequest(WorkflowTypeList, {
+  const { data, loading } = useRequest(WorkflowTypeOrdinaryList, {
     defaultParams:[{page: 1,pageSize: 9999}]
   });
 

@@ -33,6 +33,26 @@ export async function WorkflowTypeList(
   });
 }
 
+/** 工作流类型普通列表(排除系统内置) POST /workflow/type/ordinary_list */
+export async function WorkflowTypeOrdinaryList(
+  params: {
+    // query
+    /** 当前的页码 */
+    page?: number;
+    /** 页面的容量 */
+    pageSize?: number;
+  },
+  options?: { [key: string]: any },
+) {
+  return request<API.CResult<API.PageResult<WorkflowAPI.WorkflowType[]>>>('/workflow/type/ordinary_list', {
+    method: 'POST',
+    data: {
+      ...params,
+    },
+    ...(options || {}),
+  });
+}
+
 /** 工作流类型名称修改 POST /workflow/type/update */
 export async function WorkflowTypeUpdate(
   body: { id: number; name: string },
