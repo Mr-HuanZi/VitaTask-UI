@@ -78,6 +78,7 @@ const TaskList: React.FC<TaskListPropsI> = (props) => {
     {
       title: 'ID',
       dataIndex: 'id',
+      width: 80,
       hideInSearch: true,
     },
     {
@@ -85,6 +86,7 @@ const TaskList: React.FC<TaskListPropsI> = (props) => {
       dataIndex: 'project_search',
       hideInSearch: projectId !== undefined,
       hideInTable: projectId !== undefined,
+      ellipsis: true,
       render: (dom, entity) => {
         return entity?.project?.name;
       },
@@ -98,6 +100,7 @@ const TaskList: React.FC<TaskListPropsI> = (props) => {
     {
       title: '任务标题',
       dataIndex: 'title',
+      ellipsis: true,
       render: (dom, entity) => {
         return onTitleClick ? (<a onClick={() => onTitleClick?.(entity)}>{entity?.title}</a>) : (<Text>{entity?.title}</Text>);
       },
@@ -106,6 +109,7 @@ const TaskList: React.FC<TaskListPropsI> = (props) => {
       title: '任务组',
       dataIndex: 'group',
       valueType: 'select',
+      ellipsis: true,
       params: {id: projectId},
       request: async (params) => {
         return queryTaskGroupSimpleList(params).then(r => r.data ?? []);
@@ -155,6 +159,7 @@ const TaskList: React.FC<TaskListPropsI> = (props) => {
       title: '创建时间',
       dataIndex: 'create_time',
       valueType: 'dateRange',
+      responsive: ['xxl'],
       render: (dom, entity) => {
         return timestampToString(entity.create_time);
       },
@@ -163,6 +168,7 @@ const TaskList: React.FC<TaskListPropsI> = (props) => {
       title: '操作',
       dataIndex: 'option',
       valueType: 'option',
+      width: 110,
       render: (_, entity) => [
         <a
           key="edit"
