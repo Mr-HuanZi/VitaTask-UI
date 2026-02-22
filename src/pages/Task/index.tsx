@@ -14,6 +14,7 @@ const Messages: React.FC = () => {
 
   const handleTaskDetailClose = () => {
     setDetailVisible(false);
+    setThatTask(undefined);
     actionRef.current?.reload();
   }
 

@@ -86,9 +86,7 @@ const TaskForm: React.FC<TaskFormProps> = ({projectId, onEditorChange, editorHtm
           colProps={{
             span: 12,
           }}
-          fieldProps={{
-            format: 'YYYY-MM-DD',
-          }}
+          fieldProps={{format: 'YYYY-MM-DD'}}
         />
       </ProForm.Group>
       <ProForm.Group>

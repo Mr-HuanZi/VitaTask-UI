@@ -1,17 +1,13 @@
 import type {FC} from "react";
 import React, {useEffect, useState} from "react";
-import {Badge, Button, Col, Drawer, Dropdown, message, Popconfirm, Row, Space, Tabs, Tag, Typography} from "antd";
+import {Badge, Button, Drawer, Dropdown, Empty, message, Popconfirm, Space, Tabs} from "antd";
 import {changeProjectTaskStatus, deleteTask, fetchTask, fetchTaskStatus} from "@/services/task/api";
-import {codeOk, successMessage, timestampToString, toArray} from "@/units";
-import UserItem, {UserInfo} from "@/components/UserItem";
-import moment from 'moment';
+import {codeOk, successMessage} from "@/units";
 import {DeleteOutlined, DownOutlined, FormOutlined, ProfileTwoTone, StarTwoTone} from "@ant-design/icons";
-import styles from './index.less';
 import TaskLog from "@/pages/Task/components/TaskLog";
 import Dialog from "@/components/Dialog";
 import {TaskAPI} from "@/services/task/typings";
-
-const { Paragraph, Text, Title } = Typography;
+import TaskDetailTag from "@/pages/Task/components/TaskDetail/TaskDetailTag";
 
 interface TaskDetailPropsI {
   title?: string;
@@ -57,51 +53,6 @@ const TaskDetail: FC<TaskDetailPropsI> = ({title, visible, onClose, taskId, onEd
       }
     });
   }, []);
-
-  const TaskInfoItem: FC<{label: React.ReactNode}> = ({label, children}) => {
-    return (
-        <div className={styles.describeItemContainer}>
-            <span className={styles.describeItemLabel}>{label}</span>
-            <span className={styles.describeItemContent}>{children}</span>
-        </div>
-    );
-  }
-
-  const TaskInfoDom: FC<{data?: TaskAPI.Task}> = ({data}) => (
-      <div className={styles.infoContainer}>
-          <TaskInfoItem label="负责人">
-              <UserItem users={data?.leader?.user_info}/>
-          </TaskInfoItem>
-          <TaskInfoItem label="协作人">
-              <UserItem
-                  users={toArray(data?.collaborator).map((item: any): UserInfo => ({
-                      id: item.user_id,
-                      avatar: item.user_info.avatar,
-                      userLogin: item.user_info.userLogin,
-                      userNickname: item.user_info.userNickname,
-                  }))}
-              />
-          </TaskInfoItem>
-          <TaskInfoItem label="计划时间">
-              <Space split="~">
-                  {toArray(taskData?.plan_time).map(item => timestampToString(item, "YYYY-MM-DD")) }
-              </Space>
-          </TaskInfoItem>
-          <TaskInfoItem label="所属项目">
-              {taskData?.project?.name}
-          </TaskInfoItem>
-          <TaskInfoItem label="任务组">
-              {taskData?.group?.name}
-          </TaskInfoItem>
-      </div>
-  );
-
-  const TaskDescribe: FC<{describe: string}> = ({describe}) => (
-    <>
-      <Text type="secondary" strong>描述：</Text>
-      <div className={styles.describe}><Paragraph><div dangerouslySetInnerHTML={{ __html: describe }} /></Paragraph></div>
-    </>
-  );
 
   const handleDropdownClick = (key: string) => {
     changeProjectTaskStatus({ id: taskData?.id ?? 0, status: parseInt(key) }).then(({ code }) => {
@@ -170,31 +121,7 @@ const TaskDetail: FC<TaskDetailPropsI> = ({title, visible, onClose, taskId, onEd
     {
       label: '详情',
       key: 'detail',
-      children: (
-        <>
-          <div className={styles.header}>
-            <Title level={4}>
-              { taskData?.id && <Tag color="blue">{taskData?.id}</Tag> }
-              { taskData?.title }
-            </Title>
-            <Space size="small" className={styles.content}>
-              <UserItem users={taskData?.creator?.user_info} />
-              <Text type="secondary">
-                创建于{moment(taskData?.create_time).format('YYYY年M月D日 HH:mm')}，最后更新于
-                {moment(taskData?.update_time).format('YYYY年M月D日 HH:mm')}
-              </Text>
-            </Space>
-          </div>
-          <Row>
-            <Col span={17}>
-              <TaskDescribe describe={taskData?.describe ?? ''}/>
-            </Col>
-            <Col span={7}>
-              <TaskInfoDom data={taskData}/>
-            </Col>
-          </Row>
-        </>
-      )
+      children: taskData ? <TaskDetailTag taskData={taskData}/> : <Empty />
     },
     {
       label: '操作记录',

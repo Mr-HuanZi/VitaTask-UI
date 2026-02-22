@@ -64,7 +64,7 @@ export async function ResetPassword(
 }
 
 /** 简单成员列表 GET /member/list/simple */
-export function QueryMemberSimpleLists(body: any, options?: { [key: string]: any }) {
+export function QueryMemberSimpleLists(body?: any, options?: { [key: string]: any }) {
   return request<API.CResult<MemberAPI.Simple[]>>('/member/list/simple', {
     method: 'POST',
     params: body,
