@@ -124,3 +124,19 @@ export async function projectMemberBind(body: ProjectAPI.ProjectMemberBind, opti
     ...(options || {}),
   });
 }
+
+export async function fetchProjectSetting(id: number, options?: { [key: string]: any }) {
+  return request<API.CResult<ProjectAPI.ProjectSetting>>('/project/setting', {
+    method: 'POST',
+    data: {id},
+    ...(options || {}),
+  });
+}
+
+export async function projectSettingUpdate(body: ProjectAPI.ProjectSetting, options?: { [key: string]: any }) {
+  return request<API.CResult>('/project/update_setting', {
+    method: 'POST',
+    data: body,
+    ...(options || {}),
+  });
+}

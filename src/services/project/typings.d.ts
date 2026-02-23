@@ -34,4 +34,9 @@ declare namespace ProjectAPI {
     users: number[];
     role: number;
   }
+
+  type ProjectSetting = {
+    id: number;
+    default_workflow_type: number;
+  }
 }

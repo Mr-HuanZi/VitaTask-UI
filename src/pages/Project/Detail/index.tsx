@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {useParams} from '@umijs/max';
-import {DashboardOutlined, ProfileOutlined, TeamOutlined} from "@ant-design/icons";
+import {DashboardOutlined, ProfileOutlined, SettingOutlined, TeamOutlined} from "@ant-design/icons";
 import TaskList from "@/pages/Task/components/TaskList";
 import {fetchProjectDetail} from "@/services/project/api";
 import {codeOk} from "@/units";
@@ -12,6 +12,7 @@ import TaskEdit from "@/pages/Task/components/TaskEdit";
 import ProjectMember from "../components/ProjectMember";
 import ProjectOverview from "@/pages/Project/components/ProjectOverview";
 import {TaskAPI} from "@/services/task/typings";
+import ProjectSetting from "@/pages/Project/components/ProjectSetting";
 
 const items: MenuProps['items'] = [
   {
@@ -28,6 +29,11 @@ const items: MenuProps['items'] = [
     label: '成员',
     key: 'member',
     icon: <TeamOutlined />,
+  },
+  {
+    label: '设置',
+    key: 'setting',
+    icon: <SettingOutlined />,
   },
 ];
 
@@ -56,7 +62,7 @@ const ProjectDetail: React.FC = () => {
   }
 
   const currentDom = (curr: string) => {
-    if (curr === 'task')
+    if (curr === 'task') {
       return (
         <TaskList
           projectId={projectData?.id ?? 0}
@@ -70,12 +76,13 @@ const ProjectDetail: React.FC = () => {
           }}
         />
       );
-    else if (curr === 'member'){
+    } else if (curr === 'member'){
       return <ProjectMember projectId={projectData?.id ?? 0}/>
     } else if (curr === 'overview' && projectData) {
       return <ProjectOverview projectData={projectData} />
-    }
-    else {
+    } else if (curr === 'setting') {
+      return <ProjectSetting projectId={projectData?.id ?? 0} />
+    } else {
       return <></>
     }
   }
