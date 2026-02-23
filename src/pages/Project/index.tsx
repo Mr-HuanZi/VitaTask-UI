@@ -76,7 +76,7 @@ const Project: React.FC = () => {
         }
       })
     } else {
-      messageApi.warning('功能未开放');
+      messageApi.warning('功能未开放').then();
     }
   };
 
@@ -155,7 +155,7 @@ const Project: React.FC = () => {
     {
       title: '负责人',
       render: (dom, entity) => {
-        return entity.leader?.userInfo.userNickname;
+        return entity.leader?.userInfo?.userNickname ?? '';
       },
     },
     {
