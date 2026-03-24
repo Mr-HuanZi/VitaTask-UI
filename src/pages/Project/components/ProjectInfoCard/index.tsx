@@ -1,4 +1,4 @@
-import {FC, useEffect, useState} from "react";
+import {FC, useEffect, useMemo, useState} from "react";
 import {fetchTaskStatistics} from "@/services/task/api";
 import {codeOk, timestampToString} from "@/units";
 import {Space, Tag, Typography} from "antd";
@@ -15,8 +15,10 @@ export interface ProjectInfoCardProps {
   createTime?: number;
 }
 
+type projectStatus = {text: string, color: string};
+
 // 归档状态
-const projectStatusEnum = {
+const projectStatusEnum: Record<number, projectStatus> = {
   0: {
     text: '开始',
     color: 'processing',
@@ -83,10 +85,6 @@ const taskDelayRatePieConfig = {
 
 const ProjectInfoCard: FC<ProjectInfoCardProps> = ({projectId, leaderInfo, projectArchive, createTime}) => {
 
-  const [projectArchiveStatus, setProjectArchiveStatus] = useState<{
-    text: string,
-    color: string,
-  }>();
   const [taskCompletionRate, setTaskCompletionRate] = useState<{type: string, value: number}[]>([]);
   const [taskDelayRate, setTaskDelayRate] = useState<{type: string, value: number}[]>([]);
 
@@ -108,11 +106,8 @@ const ProjectInfoCard: FC<ProjectInfoCardProps> = ({projectId, leaderInfo, proje
     });
   }, [projectId]);
 
-  useEffect(() => {
-    if (projectArchive === undefined)
-      setProjectArchiveStatus(projectStatusEnum[0]);
-    else
-      setProjectArchiveStatus(projectStatusEnum[projectArchive]);
+  const projectArchiveStatus = useMemo(() => {
+    return projectStatusEnum[projectArchive || 0];
   }, [projectArchive]);
 
   return (
