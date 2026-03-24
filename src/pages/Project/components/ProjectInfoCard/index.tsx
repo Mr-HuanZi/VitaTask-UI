@@ -45,6 +45,11 @@ const taskCompletionRatePieConfig = {
       textAlign: 'center',
       fontSize: 14,
     },
+    transform: [
+      {
+        type: 'overlapDodgeY',
+      },
+    ]
   },
   interactions: [
     {
@@ -97,11 +102,11 @@ const ProjectInfoCard: FC<ProjectInfoCardProps> = ({projectId, leaderInfo, proje
         setTaskCompletionRate([
           {type: '已完成', value: data?.completed ?? 0},
           {type: '待处理', value: data?.processing ?? 0},
-        ]);
+        ].filter(item => item.value > 0));
         setTaskDelayRate([
           {type: '按时完成', value: data?.finish_on_time ?? 0},
           {type: '超时完成', value: data?.timeout_completion ?? 0},
-        ]);
+        ].filter(item => item.value > 0));
       }
     });
   }, [projectId]);
@@ -110,33 +115,43 @@ const ProjectInfoCard: FC<ProjectInfoCardProps> = ({projectId, leaderInfo, proje
     return projectStatusEnum[projectArchive || 0];
   }, [projectArchive]);
 
+  const PieEmpty = () => <div style={{width: 100, height: 100, textAlign: 'center', lineHeight: '100px'}}>暂无数据</div>;
+
   return (
     <ProCard title="项目信息">
       <div className={`flex-space-around m-b-20`}>
         <Space direction="vertical" align="center">
-          <Pie
-            {...taskCompletionRatePieConfig}
-            data={taskCompletionRate}
-            legend={false} // 关闭图例
-            // statistic 放在对象里IDE会报类型不正确
-            statistic={{
-              title: false,
-              content: false,
-            }}
-          />
+          {
+            taskCompletionRate.length > 0 ?
+              <Pie
+                {...taskCompletionRatePieConfig}
+                data={taskCompletionRate}
+                legend={false} // 关闭图例
+                // statistic 放在对象里IDE会报类型不正确
+                statistic={{
+                  title: false,
+                  content: false,
+                }}
+              />
+              : <PieEmpty />
+          }
           <Text strong>任务完成率</Text>
         </Space>
         <Space direction="vertical" align="center">
-          <Pie
-            {...taskDelayRatePieConfig}
-            data={taskDelayRate}
-            legend={false} // 关闭图例
-            // statistic 放在对象里IDE会报类型不正确
-            statistic={{
-              title: false,
-              content: false,
-            }}
-          />
+          {
+            taskDelayRate.length > 0 ?
+              <Pie
+                {...taskDelayRatePieConfig}
+                data={taskDelayRate}
+                legend={false} // 关闭图例
+                // statistic 放在对象里IDE会报类型不正确
+                statistic={{
+                  title: false,
+                  content: false,
+                }}
+              />
+              : <PieEmpty />
+          }
           <Text strong>任务延误率</Text>
         </Space>
       </div>
